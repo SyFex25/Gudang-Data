@@ -1,4 +1,5 @@
 import mysql.connector
+import uuid
 from datetime import date, timedelta
 
 def connect_to_database():
@@ -53,8 +54,8 @@ def create_store_dimension_table():
 
         create_table_query = """
         CREATE TABLE store_dimension (
-            store_key INT PRIMARY KEY,
-            store_number INT,
+            store_key VARCHAR(5) PRIMARY KEY,
+            store_number VARCHAR(3),
             store_name VARCHAR(255),
             store_district VARCHAR(255),
             store_region VARCHAR(255)
@@ -71,9 +72,85 @@ def create_store_dimension_table():
         mycursor.close()
         mydb.close()
 
+def create_cashier_dimension_table():
+    mydb = connect_to_database()
+
+    if mydb:
+        mycursor = mydb.cursor()
+
+        create_table_query = """
+        CREATE TABLE cashier_dimension (
+            cashier_key VARCHAR(10) PRIMARY KEY,
+            cashier_employee_id VARCHAR(10) UNIQUE,
+            cashier_name VARCHAR(255)
+        );
+        """
+
+        try:
+            mycursor.execute(create_table_query)
+            mydb.commit()
+            print("Tabel cashier_dimension telah berhasil dibuat.")
+        except mysql.connector.Error as err:
+            print(f"Error: {err}")
+
+        mycursor.close()
+        mydb.close()
+
+def generate_unique_key():
+    return str(uuid.uuid4())
+
+def generate_unique_cashier_key():
+    # Menghasilkan kode unik 3 angka
+    unique_code = str(uuid.uuid4().int)[:3]
+    cashier_key = f"CASHIER{unique_code}"
+    return cashier_key
+
 def get_holiday_dates():
     holiday_dates = ['2023-01-01', '2023-12-25', '2023-07-04']
     return holiday_dates
+
+def insert_cashier_data(cashier_employee_id, cashier_name):
+    mydb = connect_to_database()
+
+    if mydb:
+        mycursor = mydb.cursor()
+
+        cashier_key = generate_unique_cashier_key()
+
+        insert_query = """
+        INSERT INTO cashier_dimension (cashier_key, cashier_employee_id, cashier_name)
+        VALUES (%s, %s, %s)
+        """
+        data = (cashier_key, cashier_employee_id, cashier_name)
+
+        mycursor.execute(insert_query, data)
+        mydb.commit()
+        print("Data kasir telah berhasil disisipkan.")
+
+        mycursor.close()
+        mydb.close()
+
+
+def insert_store_data(store_number, store_name, store_district, store_region):
+    mydb = connect_to_database()
+
+    if mydb:
+        mycursor = mydb.cursor()
+
+        store_key = generate_unique_key()
+
+        insert_query = """
+        INSERT INTO store_dimension (store_key, store_number, store_name, store_district, store_region)
+        VALUES (%s, %s, %s, %s, %s)
+        """
+        data = (store_key, store_number, store_name, store_district, store_region)
+
+        mycursor.execute(insert_query, data)
+        mydb.commit()
+        print("Data toko telah berhasil disisipkan.")
+
+        mycursor.close()
+        mydb.close()
 
 def insert_date_data():
     mydb = connect_to_database()
@@ -81,7 +158,6 @@ def insert_date_data():
     if mydb:
         mycursor = mydb.cursor()
         
-        # Tanggal awal (1 Januari 2023)
         start_date = date(2023, 1, 1)
         holiday_dates = get_holiday_dates()
 
@@ -131,8 +207,11 @@ def insert_date_data():
 
 def init_main():
     # create_date_dimension_table()
-    create_store_dimension_table()
+    # create_store_dimension_table()
+    # create_cashier_dimension_table()
     # insert_date_data()
+    # insert_store_data(123, "Indomaret", "Jakarta Pusat", "Jakarta")
+    insert_cashier_data(212100159, "John Doe")
 
 if __name__ == "__main__":
     init_main()
