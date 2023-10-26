@@ -56,7 +56,7 @@ def create_product_dimension_table():
         create_table_query = """
         CREATE TABLE Product_Dimension (
             product_key VARCHAR(25) UNIQUE PRIMARY KEY,
-            SKU_number VARCHAR(25) UNIQUE,
+            SKU_number VARCHAR(25),
             product_description VARCHAR(255),
             brand_description VARCHAR(255),
             category_description VARCHAR(255)
@@ -108,7 +108,7 @@ def create_cashier_dimension_table():
         create_table_query = """
         CREATE TABLE cashier_dimension (
             cashier_key VARCHAR(10) PRIMARY KEY,
-            cashier_employee_id VARCHAR(10) UNIQUE,
+            cashier_employee_id VARCHAR(10),
             cashier_name VARCHAR(255)
         );
         """
@@ -117,6 +117,80 @@ def create_cashier_dimension_table():
             mycursor.execute(create_table_query)
             mydb.commit()
             print("Tabel cashier_dimension telah berhasil dibuat.")
+        except mysql.connector.Error as err:
+            print(f"Error: {err}")
+
+        mycursor.close()
+        mydb.close()
+
+def create_promotion_dimension_table():
+    mydb = connect_to_database()
+    
+    if mydb:
+        mycursor = mydb.cursor()
+
+        create_table_query = """
+        CREATE TABLE Promotion_Dimension (
+            promotion_key VARCHAR(25) PRIMARY KEY,
+            promotion_code VARCHAR(25),
+            promotion_name VARCHAR(25),
+            promotion_media_type VARCHAR(25),
+            promotion_begin_date DATE,
+            promotion_end_date DATE
+        );
+        """
+
+        try:
+            mycursor.execute(create_table_query)
+            mydb.commit()
+            print("Tabel Promotion_Dimension telah berhasil dibuat.")
+        except mysql.connector.Error as err:
+            print(f"Error: {err}")
+
+        mycursor.close()
+        mydb.close()
+
+def create_payment_method_dimension_table():
+    mydb = connect_to_database()
+    
+    if mydb:
+        mycursor = mydb.cursor()
+
+        create_table_query = """
+        CREATE TABLE Payment_Method_Dimension (
+            payment_method_key VARCHAR(25) PRIMARY KEY,
+            payment_method_description VARCHAR(255),
+            payment_method_group VARCHAR(25)
+        );
+        """
+
+        try:
+            mycursor.execute(create_table_query)
+            mydb.commit()
+            print("Tabel Payment_Method_Dimension telah berhasil dibuat.")
+        except mysql.connector.Error as err:
+            print(f"Error: {err}")
+
+        mycursor.close()
+        mydb.close()
+
+def create_traveller_shopper_dimension_table():
+    mydb = connect_to_database()
+    
+    if mydb:
+        mycursor = mydb.cursor()
+
+        create_table_query = """
+        CREATE TABLE Traveller_Shopper_Dimension (
+            traveller_id VARCHAR(10) PRIMARY KEY,
+            traveller_type VARCHAR(25)
+        );
+        """
+
+        try:
+            mycursor.execute(create_table_query)
+            mydb.commit()
+            print("Tabel Traveller_Shopper_Dimension telah berhasil dibuat.")
         except mysql.connector.Error as err:
             print(f"Error: {err}")
 
@@ -152,33 +226,6 @@ def insert_cashier_data(cashier_employee_id, cashier_name):
         mycursor.execute(insert_query, data)
         mydb.commit()
         print("Data kasir telah berhasil disisipkan.")
-
-        mycursor.close()
-        mydb.close()
-
-def create_promotion_dimension_table():
-    mydb = connect_to_database()
-    
-    if mydb:
-        mycursor = mydb.cursor()
-
-        create_table_query = """
-        CREATE TABLE Promotion_Dimension (
-            promotion_key VARCHAR(25) PRIMARY KEY,
-            promotion_code VARCHAR(25) UNIQUE,
-            promotion_name VARCHAR(25),
-            promotion_media_type VARCHAR(25),
-            promotion_begin_date DATE,
-            promotion_end_date DATE
-        );
-        """
-
-        try:
-            mycursor.execute(create_table_query)
-            mydb.commit()
-            print("Tabel Promotion_Dimension telah berhasil dibuat.")
-        except mysql.connector.Error as err:
-            print(f"Error: {err}")
 
         mycursor.close()
         mydb.close()
@@ -273,60 +320,16 @@ def insert_date_data():
         mycursor.close()
         mydb.close()
 
-def create_payment_method_dimension_table():
-    mydb = connect_to_database()
-    
-    if mydb:
-        mycursor = mydb.cursor()
-
-        create_table_query = """
-        CREATE TABLE Payment_Method_Dimension (
-            payment_method_key VARCHAR(25) PRIMARY KEY,
-            payment_method_description VARCHAR(255),
-            payment_method_group VARCHAR(25)
-        );
-        """
-
-        try:
-            mycursor.execute(create_table_query)
-            mydb.commit()
-            print("Tabel Payment_Method_Dimension telah berhasil dibuat.")
-        except mysql.connector.Error as err:
-            print(f"Error: {err}")
-
-        mycursor.close()
-        mydb.close()
-
-def create_traveller_shopper_dimension_table():
-    mydb = connect_to_database()
-    
-    if mydb:
-        mycursor = mydb.cursor()
-
-        create_table_query = """
-        CREATE TABLE Traveller_Shopper_Dimension (
-            traveller_id VARCHAR(10) PRIMARY KEY,
-            traveller_type VARCHAR(25)
-        );
-        """
-
-        try:
-            mycursor.execute(create_table_query)
-            mydb.commit()
-            print("Tabel Traveller_Shopper_Dimension telah berhasil dibuat.")
-        except mysql.connector.Error as err:
-            print(f"Error: {err}")
-
-        mycursor.close()
-        mydb.close()
-
 def init_main():
-    create_date_dimension_table()
+    # create_date_dimension_table()
     # create_store_dimension_table()
     # create_cashier_dimension_table()
+    # create_payment_method_dimension_table()
+    # create_promotion_dimension_table()
+    # create_traveller_shopper_dimension_table()
     insert_date_data()
     # insert_store_data(123, "Indomaret", "Jakarta Pusat", "Jakarta")
-    insert_cashier_data(212100159, "John Doe")
+    # insert_cashier_data(212100159, "John Doe")
 
 if __name__ == "__main__":
     init_main()
