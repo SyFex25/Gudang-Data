@@ -380,7 +380,7 @@ def init_main():
     # insert_date_data()
     # insert_store_data(123, "Indomaret", "Jakarta Pusat", "Jakarta")
     # insert_cashier_data(212100159, "John Doe")
-    insert_product_data("Susu", "Frisian Flag", "Susu Anak")
+    # insert_product_data("Susu", "Frisian Flag", "Susu Anak")
     insert_product_data("Susu Cokelat", "Ultramilk", "Susu Anak")
 
 if __name__ == "__main__":
