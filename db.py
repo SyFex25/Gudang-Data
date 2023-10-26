@@ -55,8 +55,8 @@ def create_product_dimension_table():
 
         create_table_query = """
         CREATE TABLE Product_Dimension (
-            product_key VARCHAR(25) UNIQUE PRIMARY KEY,
-            SKU_number VARCHAR(25),
+            product_key VARCHAR(10) UNIQUE PRIMARY KEY,
+            SKU_number VARCHAR(13),
             product_description VARCHAR(255),
             brand_description VARCHAR(255),
             category_description VARCHAR(255)
@@ -320,6 +320,56 @@ def insert_date_data():
         mycursor.close()
         mydb.close()
 
+def insert_store_data(store_key, store_number, store_name, store_district, store_region):
+    mydb = connect_to_database()
+
+    if mydb:
+        mycursor = mydb.cursor()
+
+        insert_query = """
+        INSERT INTO store_dimension (store_key, store_number, store_name, store_district, store_region)
+        VALUES (%s, %s, %s, %s, %s)
+        """
+        data = (store_key, store_number, store_name, store_district, store_region)
+
+        try:
+            mycursor.execute(insert_query, data)
+            mydb.commit()
+            print("Data toko telah berhasil disisipkan.")
+        except mysql.connector.Error as err:
+            print(f"Error: {err}")
+
+        mycursor.close()
+        mydb.close()
+
+def insert_product_data(product_description, brand_description, category_description):
+    mydb = connect_to_database()
+
+    if mydb:
+        mycursor = mydb.cursor()
+
+        # Menghasilkan UUID sebagai product_key
+        product_key = int(uuid.uuid4())
+
+        # Menggabungkan SKU dan UUID untuk membuat product_key
+        SKU_number = f"SKU-{product_key}"
+
+        insert_query = """
+        INSERT INTO Product_Dimension (product_key, SKU_number, product_description, brand_description, category_description)
+        VALUES (%s, %s, %s, %s, %s)
+        """
+        data = (product_key, SKU_number, product_description, brand_description, category_description)
+
+        try:
+            mycursor.execute(insert_query, data)
+            mydb.commit()
+            print("Data produk telah berhasil disisipkan.")
+        except mysql.connector.Error as err:
+            print(f"Error: {err}")
+
+        mycursor.close()
+        mydb.close()
+
 def init_main():
     # create_date_dimension_table()
     # create_store_dimension_table()
@@ -327,9 +377,11 @@ def init_main():
     # create_payment_method_dimension_table()
     # create_promotion_dimension_table()
     # create_traveller_shopper_dimension_table()
-    insert_date_data()
+    # insert_date_data()
     # insert_store_data(123, "Indomaret", "Jakarta Pusat", "Jakarta")
     # insert_cashier_data(212100159, "John Doe")
+    insert_product_data("Susu", "Frisian Flag", "Susu Anak")
+    insert_product_data("Susu Cokelat", "Ultramilk", "Susu Anak")
 
 if __name__ == "__main__":
     init_main()
