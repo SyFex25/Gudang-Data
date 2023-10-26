@@ -8,7 +8,8 @@ def connect_to_database():
             host="localhost",
             user="root",
             password="",
-            database="gudang_data"
+            database="gudang_data",
+            autocommit=True
         )
         return mydb
     except mysql.connector.Error as err:
@@ -106,7 +107,7 @@ def generate_unique_cashier_key():
     return cashier_key
 
 def get_holiday_dates():
-    holiday_dates = ['2023-01-01', '2023-12-25', '2023-07-04']
+    holiday_dates = ['2023-01-01', '2023-03-25', '2023-12-25', '2023-07-04', '2023-19-04', '2023-04-20', '2023-04-21', '2023-04-22', '2023-04-23', '2023-04-24', '2023-04-25']
     return holiday_dates
 
 def insert_cashier_data(cashier_employee_id, cashier_name):
@@ -154,10 +155,10 @@ def insert_store_data(store_number, store_name, store_district, store_region):
 
 def insert_date_data():
     mydb = connect_to_database()
-    
+
     if mydb:
         mycursor = mydb.cursor()
-        
+
         start_date = date(2023, 1, 1)
         holiday_dates = get_holiday_dates()
 
@@ -171,7 +172,6 @@ def insert_date_data():
             calendar_year = current_date.year
             fiscal_year_month = f'F{current_date.strftime("%Y-%m")}'
 
-            # Menentukan kuartal
             if 1 <= current_date.month <= 3:
                 calendar_quarter = 'Q1'
             elif 4 <= current_date.month <= 6:
@@ -180,38 +180,56 @@ def insert_date_data():
                 calendar_quarter = 'Q3'
             else:
                 calendar_quarter = 'Q4'
-            
+
             if day_of_week in ['Saturday', 'Sunday']:
                 weekday_indicator = 'Weekend'
             else:
                 weekday_indicator = 'Weekday'
 
-            if current_date.strftime('%Y-%m-%d') in holiday_dates:
+            if date_str in holiday_dates:
                 holiday_indicator = 'Holiday'
             else:
                 holiday_indicator = 'Non-Holiday'
 
-            insert_query = """
-            INSERT INTO date_dimension (date_key, date, full_date_desc, day_of_week, calendar_month, calendar_quarter, calendar_year, fiscal_year_month, holiday_indicator, weekday_indicator)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-            """
-            data = (date_key, date_str, full_date_desc, day_of_week, calendar_month, calendar_quarter, calendar_year, fiscal_year_month, holiday_indicator, weekday_indicator)
+            # Periksa apakah data untuk tanggal ini sudah ada dalam tabel
+            data_exists_query = f"SELECT COUNT(*) FROM date_dimension WHERE date = '{date_str}';"
+            mycursor.execute(data_exists_query)
+            data_exists = mycursor.fetchone()
 
-            mycursor.execute(insert_query, data)
+            if data_exists[0] == 0:
+                # Jika data belum ada, sisipkan data baru
+                insert_query = """
+                INSERT INTO date_dimension (date_key, date, full_date_desc, day_of_week, calendar_month, calendar_quarter, calendar_year, fiscal_year_month, holiday_indicator, weekday_indicator)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                """
+                data = (date_key, date_str, full_date_desc, day_of_week, calendar_month, calendar_quarter, calendar_year, fiscal_year_month, holiday_indicator, weekday_indicator)
+
+                mycursor.execute(insert_query, data)
+            else:
+                # Jika data sudah ada, perbarui data tersebut
+                update_query = """
+                UPDATE date_dimension
+                SET date_key = %s, full_date_desc = %s, day_of_week = %s, calendar_month = %s, calendar_quarter = %s, fiscal_year_month = %s, holiday_indicator = %s, weekday_indicator = %s
+                WHERE date = %s
+                """
+                data = (date_key, full_date_desc, day_of_week, calendar_month, calendar_quarter, fiscal_year_month, holiday_indicator, weekday_indicator, date_str)
+
+                mycursor.execute(update_query, data)
 
         mydb.commit()
-        print("Data tanggal telah berhasil disisipkan.")
+        print("Data tanggal telah berhasil disisipkan atau diperbarui.")
 
         mycursor.close()
         mydb.close()
 
+
 def init_main():
-    # create_date_dimension_table()
+    create_date_dimension_table()
     # create_store_dimension_table()
     # create_cashier_dimension_table()
-    # insert_date_data()
+    insert_date_data()
     # insert_store_data(123, "Indomaret", "Jakarta Pusat", "Jakarta")
-    insert_cashier_data(212100159, "John Doe")
+    # insert_cashier_data(212100159, "John Doe")
 
 if __name__ == "__main__":
     init_main()
