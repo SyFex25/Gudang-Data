@@ -370,6 +370,27 @@ def insert_product_data(product_description, brand_description, category_descrip
         mycursor.close()
         mydb.close()
 
+def insert_payment_data(payment_method_description, payment_method_group):
+    mydb = connect_to_database()
+
+    if mydb:
+        mycursor = mydb.cursor()
+        
+        # Menghasilkan UUID sebagai payment_key
+        payment_method_key = int(uuid.uuid4())
+
+        insert_query = "INSERT INTO payment_method_dimension (payment_method_key, payment_method_description, payment_method_group) VALUES (%s, %s, %s)"
+
+        data = (payment_method_key, payment_method_description, payment_method_group)
+        mycursor.execute(insert_query, data)
+
+        try:
+            mycursor.execute(insert_query, data)
+            mydb.commit()
+            print("Data toko telah berhasil disisipkan.")
+        except mysql.connector.Error as err:
+            print(f"Error: {err}")
+
 def init_main():
     # create_date_dimension_table()
     # create_store_dimension_table()
@@ -382,6 +403,7 @@ def init_main():
     # insert_cashier_data(212100159, "John Doe")
     insert_product_data("Susu", "Frisian Flag", "Susu Anak")
     insert_product_data("Susu Cokelat", "Ultramilk", "Susu Anak")
+    insert_payment_data("Kartu Debit", "Debit")
 
 if __name__ == "__main__":
     init_main()
