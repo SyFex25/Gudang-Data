@@ -387,9 +387,38 @@ def insert_payment_data(payment_method_description, payment_method_group):
         try:
             mycursor.execute(insert_query, data)
             mydb.commit()
-            print("Data toko telah berhasil disisipkan.")
+            print("Data payment telah berhasil disisipkan.")
         except mysql.connector.Error as err:
             print(f"Error: {err}")
+
+def insert_promotion_data(promotion_name, promotion_media_type, promotion_begin_date, promotion_end_date):
+    mydb = connect_to_database()
+
+    if mydb:
+        mycursor = mydb.cursor()
+
+        # Menghasilkan UUID sebagai promotion_key
+        promotion_key = int(uuid.uuid4())
+
+        # Menggabungkan SKU dan UUID untuk membuat promotion_name
+        promotion_code = f'P{str(uuid.uuid4())}'
+
+        insert_query = """
+        INSERT INTO promotion_dimension (promotion_key, promotion_code, promotion_name, promotion_media_type, promotion_begin_date, promotion_end_date)
+        VALUES (%s, %s, %s, %s, %s, %s)
+        """
+        data = (promotion_key, promotion_code, promotion_name, promotion_media_type, promotion_begin_date, promotion_end_date)
+
+        try:
+            mycursor.execute(insert_query, data)
+            mydb.commit()
+            print("Data produk telah berhasil disisipkan.")
+        except mysql.connector.Error as err:
+            print(f"Error: {err}")
+
+        mycursor.close()
+        mydb.close()
+
 
 def init_main():
     # create_date_dimension_table()
@@ -403,7 +432,8 @@ def init_main():
     # insert_cashier_data(212100159, "John Doe")
     # insert_product_data("Susu", "Frisian Flag", "Susu Anak")
     # insert_product_data("Susu Cokelat", "Ultramilk", "Susu Anak")
-    insert_payment_data("GoPay", "Digital Wallet")
+    # insert_payment_data("GoPay", "Digital Wallet")
+    insert_promotion_data("Valentine", "Online", '2023-02-13', '2023-07-14')
 
 if __name__ == "__main__":
     init_main()
