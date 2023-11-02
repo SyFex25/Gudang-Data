@@ -29,7 +29,7 @@ class ProductDimension(db.Model):
     product_description = db.Column(db.String(255))
     brand_description = db.Column(db.String(255))
     category_description = db.Column(db.String(255))
-    cost = db.Column(db.Integer(11))
+    cost = db.Column(db.Integer())
 
 class StoreDimension(db.Model):
     store_key = db.Column(db.String(5), primary_key=True)
@@ -61,6 +61,7 @@ class TravellerShopperDimension(db.Model):
     traveller_type = db.Column(db.String(25))
 
 class RetailSalesFact(db.Model):
+    __tablename__ = 'retail_sales_facts'
     date_key = db.Column(db.Date, primary_key=True)
     product_key = db.Column(db.String(10), primary_key=True)
     store_key = db.Column(db.String(5), primary_key=True)
@@ -265,6 +266,56 @@ def insert_date_data():
     except Exception as e:
         return f"Error: {e}"
 
+@app.route('/query_gross_profit')
+def query_gross_profit():
+    results = RetailSalesFact.query.filter(
+    RetailSalesFact.store_key == "2123",
+    RetailSalesFact.date_key == "2023-11-02",
+    RetailSalesFact.product_key == "1035453804963260181506960"
+    ).with_entities(RetailSalesFact.extended_gross_profit_dollar_amount).all()
+    for a in results:
+        print(a[0])
+
+    return "Done"
+
+@app.route('/gross_margin')
+def gross_margin():
+    # Replace the hardcoded values with actual values or request parameters
+    store_key = "2123"  # Replace with the store key you want to query
+    date_key = "2023-11-02"  # Replace with the date key you want to query
+    product_key = "1035453804963260181506960"  # Replace with the product key you want to query
+
+    # Filter the data for the specified store, date, and product
+    query = RetailSalesFact.query.filter(
+        RetailSalesFact.store_key == store_key,
+        RetailSalesFact.date_key == date_key,
+        RetailSalesFact.product_key == product_key
+    )
+
+    # Calculate the total sales and total cost for the filtered data
+    results = query.with_entities(RetailSalesFact.extended_sales_dollar_amount, RetailSalesFact.extended_cost_dollar_amount).all()
+
+    total_sales = sum(result[0] for result in results)
+    total_cost = sum(result[1] for result in results)
+
+    # Calculate the gross margin
+    gross_margin = total_sales - total_cost
+
+    return f"Gross Margin for Store {store_key}, Date {date_key}, Product {product_key}: ${gross_margin:.2f}"
+
+
+@app.route('/sales_dollar_amount')
+def sales_dollar_amount():
+    results = RetailSalesFact.query.filter(
+    RetailSalesFact.store_key == "2123",
+    RetailSalesFact.date_key == "date_key",
+    RetailSalesFact.product_key == "product_key"
+    ).with_entities(RetailSalesFact.extended_sales_dollar_amount).all()
+    for a in results:
+        print(a[0])
+
+    return "Done"
+
 def generate_unique_cashier_key():
     unique_code = str(uuid.uuid4().int)[:3]
     cashier_key = f"CASHIER{unique_code}"
@@ -276,16 +327,6 @@ def generate_unique_key():
 def get_holiday_dates():
     holiday_dates = ['2023-01-01', '2023-03-25', '2023-12-25', '2023-07-04', '2023-19-04', '2023-04-20', '2023-04-21', '2023-04-22', '2023-04-23', '2023-04-24', '2023-04-25']
     return holiday_dates
-
-@app.route('/query_gross_profit')
-def query_gross_profit():
-    results = db.session.query(RetailSalesFact.extended_gross_profit_dollar_amount).all()
-    print(results)
-    
-
-
-
-
 
 if __name__ == '__main__':
     app.run(debug=True)
