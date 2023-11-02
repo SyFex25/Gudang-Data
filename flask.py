@@ -30,7 +30,7 @@ class ProductDimension(db.Model):
     brand_description = db.Column(db.String(255))
     category_description = db.Column(db.String(255))
     cost = db.Column(db.Integer(11))
-    
+
 class StoreDimension(db.Model):
     store_key = db.Column(db.String(5), primary_key=True)
     store_number = db.Column(db.String(3))
@@ -59,6 +59,41 @@ class PaymentMethodDimension(db.Model):
 class TravellerShopperDimension(db.Model):
     traveller_id = db.Column(db.String(10), primary_key=True)
     traveller_type = db.Column(db.String(25))
+
+class RetailSalesFact(db.Model):
+    date_key = db.Column(db.Date, primary_key=True)
+    product_key = db.Column(db.String(10), primary_key=True)
+    store_key = db.Column(db.String(5), primary_key=True)
+    promotion_key = db.Column(db.String(255))
+    cashier_key = db.Column(db.String(255))
+    payment_method_key = db.Column(db.String(255))
+    pos_transaction = db.Column(db.String(255))
+    sales_quantity = db.Column(db.Integer)
+    regular_unit_price = db.Column(db.Numeric(10, 2))
+    discount_unit_price = db.Column(db.Numeric(10, 2))
+    net_unit_price = db.Column(db.Numeric(10, 2))
+    extended_discount_dollar_amount = db.Column(db.Numeric(10, 2))
+    extended_sales_dollar_amount = db.Column(db.Numeric(10, 2))
+    extended_cost_dollar_amount = db.Column(db.Numeric(10, 2))
+    extended_gross_profit_dollar_amount = db.Column(db.Numeric(10, 2))
+
+    def __init__(self, date_key, product_key, store_key, promotion_key, cashier_key, payment_method_key, pos_transaction, sales_quantity, regular_unit_price, discount_unit_price, net_unit_price, extended_discount_dollar_amount, extended_sales_dollar_amount, extended_cost_dollar_amount, extended_gross_profit_dollar_amount):
+        self.date_key = date_key
+        self.product_key = product_key
+        self.store_key = store_key
+        self.promotion_key = promotion_key
+        self.cashier_key = cashier_key
+        self.payment_method_key = payment_method_key
+        self.pos_transaction = pos_transaction
+        self.sales_quantity = sales_quantity
+        self.regular_unit_price = regular_unit_price
+        self.discount_unit_price = discount_unit_price
+        self.net_unit_price = net_unit_price
+        self.extended_discount_dollar_amount = extended_discount_dollar_amount
+        self.extended_sales_dollar_amount = extended_sales_dollar_amount
+        self.extended_cost_dollar_amount = extended_cost_dollar_amount
+        self.extended_gross_profit_dollar_amount = extended_gross_profit_dollar_amount
+
 
 @app.route('/create_date_dimension', methods=['POST'])
 def create_date_dimension_table():
@@ -244,9 +279,9 @@ def get_holiday_dates():
 
 @app.route('/query_gross_profit')
 def query_gross_profit():
-    pass
-
-
+    results = db.session.query(RetailSalesFact.extended_gross_profit_dollar_amount).all()
+    print(results)
+    
 
 
 

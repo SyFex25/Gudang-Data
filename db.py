@@ -411,6 +411,28 @@ def insert_product_data(product_description, brand_description, category_descrip
         mycursor.close()
         mydb.close()
 
+def insert_retail_sales_fact(date_key, product_key, store_key, promotion_key, cashier_key, payment_method_key, pos_transaction, sales_quantity, regular_unit_price, discount_unit_price, net_unit_price, extended_discount_dollar_amount, extended_sales_dollar_amount, extended_cost_dollar_amount, extended_gross_profit_dollar_amount):
+    mydb = connect_to_database()
+
+    if mydb:
+        mycursor = mydb.cursor()
+
+        insert_query = """
+        INSERT INTO retail_sales_facts (date_key, product_key, store_key, promotion_key, cashier_key, payment_method_key, pos_transaction, sales_quantity, regular_unit_price, discount_unit_price, net_unit_price, extended_discount_dollar_amount, extended_sales_dollar_amount, extended_cost_dollar_amount, extended_gross_profit_dollar_amount)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+        """
+        values = (date_key, product_key, store_key, promotion_key, cashier_key, payment_method_key, pos_transaction, sales_quantity, regular_unit_price, discount_unit_price, net_unit_price, extended_discount_dollar_amount, extended_sales_dollar_amount, extended_cost_dollar_amount, extended_gross_profit_dollar_amount)
+
+        try:
+            mycursor.execute(insert_query, values)
+            mydb.commit()
+            print("Data berhasil diinsert ke tabel retail_sales_facts.")
+        except mysql.connector.Error as err:
+            print(f"Error inserting data: {err}")
+
+        mycursor.close()
+        mydb.close()
+
 def insert_payment_data(payment_method_description, payment_method_group):
     mydb = connect_to_database()
 
@@ -462,7 +484,7 @@ def insert_promotion_data(promotion_name, promotion_media_type, promotion_begin_
 
 
 def init_main():
-    create_retail_sales_facts_table()
+    # create_retail_sales_facts_table()
     # create_date_dimension_table()
     # create_store_dimension_table()
     # create_cashier_dimension_table()
@@ -476,6 +498,11 @@ def init_main():
     # insert_product_data("Susu Cokelat", "Ultramilk", "Susu Anak")
     # insert_payment_data("GoPay", "Digital Wallet")
     # insert_promotion_data("Valentine", "Online", '2023-02-13', '2023-07-14')
+    insert_retail_sales_fact(
+    '2023-11-02', '1035453804963260181506960', '2123', '1293676579042382297136886',
+    'CASHIER167', '2497412005993698094243451', 'qqeqwe', 11.0, 11.0, 11.0,
+    11.0, 11.0, 11.0, 11.0, 999999.99
+)
 
 if __name__ == "__main__":
     init_main()
