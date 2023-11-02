@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 26, 2023 at 02:49 PM
+-- Generation Time: Nov 02, 2023 at 03:02 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -442,6 +442,13 @@ CREATE TABLE `payment_method_dimension` (
   `payment_method_group` varchar(25) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `payment_method_dimension`
+--
+
+INSERT INTO `payment_method_dimension` (`payment_method_key`, `payment_method_description`, `payment_method_group`) VALUES
+('2497412005993698094243451', 'Kartu ', 'Debit');
+
 -- --------------------------------------------------------
 
 --
@@ -455,6 +462,14 @@ CREATE TABLE `product_dimension` (
   `brand_description` varchar(255) DEFAULT NULL,
   `category_description` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `product_dimension`
+--
+
+INSERT INTO `product_dimension` (`product_key`, `SKU_number`, `product_description`, `brand_description`, `category_description`) VALUES
+('1035453804963260181506960', 'SKU-103545380496326018150', 'Susu', 'Frisian Flag', 'Susu Anak'),
+('5399321030963975755733760', 'SKU-539932103096397575573', 'Susu Cokelat', 'Ultramilk', 'Susu Anak');
 
 -- --------------------------------------------------------
 
@@ -470,6 +485,44 @@ CREATE TABLE `promotion_dimension` (
   `promotion_begin_date` date DEFAULT NULL,
   `promotion_end_date` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `promotion_dimension`
+--
+
+INSERT INTO `promotion_dimension` (`promotion_key`, `promotion_code`, `promotion_name`, `promotion_media_type`, `promotion_begin_date`, `promotion_end_date`) VALUES
+('1293676579042382297136886', 'Pecd4973b-b72b-4cc4-966d-', 'Valentine', 'Online', '2023-02-13', '2023-07-14');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `retail_sales_facts`
+--
+
+CREATE TABLE `retail_sales_facts` (
+  `date_key` date DEFAULT NULL,
+  `product_key` varchar(25) DEFAULT NULL,
+  `store_key` varchar(5) DEFAULT NULL,
+  `promotion_key` varchar(255) DEFAULT NULL,
+  `cashier_key` varchar(255) DEFAULT NULL,
+  `payment_method_key` varchar(255) DEFAULT NULL,
+  `pos_transaction` varchar(255) DEFAULT NULL,
+  `sales_quantity` int(11) DEFAULT NULL,
+  `regular_unit_price` decimal(10,2) DEFAULT NULL,
+  `discount_unit_price` decimal(10,2) DEFAULT NULL,
+  `net_unit_price` decimal(10,2) DEFAULT NULL,
+  `extended_discount_dollar_amount` decimal(10,2) DEFAULT NULL,
+  `extended_sales_dollar_amount` decimal(10,2) DEFAULT NULL,
+  `extended_cost_dollar_amount` decimal(10,2) DEFAULT NULL,
+  `extended_gross_profit_dollar_amount` decimal(10,2) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `retail_sales_facts`
+--
+
+INSERT INTO `retail_sales_facts` (`date_key`, `product_key`, `store_key`, `promotion_key`, `cashier_key`, `payment_method_key`, `pos_transaction`, `sales_quantity`, `regular_unit_price`, `discount_unit_price`, `net_unit_price`, `extended_discount_dollar_amount`, `extended_sales_dollar_amount`, `extended_cost_dollar_amount`, `extended_gross_profit_dollar_amount`) VALUES
+('2023-11-02', '1035453804963260181506960', '2123', '1293676579042382297136886', 'CASHIER167', '2497412005993698094243451', 'qqeqwe', 11, 11.00, 11.00, 11.00, 100.00, 30.00, 11.00, 999999.99);
 
 -- --------------------------------------------------------
 
@@ -552,6 +605,16 @@ ALTER TABLE `promotion_dimension`
   ADD UNIQUE KEY `promotion_code` (`promotion_code`);
 
 --
+-- Indexes for table `retail_sales_facts`
+--
+ALTER TABLE `retail_sales_facts`
+  ADD KEY `product_key` (`product_key`),
+  ADD KEY `store_key` (`store_key`),
+  ADD KEY `promotion_key` (`promotion_key`),
+  ADD KEY `cashier_key` (`cashier_key`),
+  ADD KEY `payment_method_key` (`payment_method_key`);
+
+--
 -- Indexes for table `store_dimension`
 --
 ALTER TABLE `store_dimension`
@@ -562,6 +625,20 @@ ALTER TABLE `store_dimension`
 --
 ALTER TABLE `traveller_shopper_dimension`
   ADD PRIMARY KEY (`traveller_id`);
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `retail_sales_facts`
+--
+ALTER TABLE `retail_sales_facts`
+  ADD CONSTRAINT `retail_sales_facts_ibfk_1` FOREIGN KEY (`product_key`) REFERENCES `product_dimension` (`product_key`),
+  ADD CONSTRAINT `retail_sales_facts_ibfk_2` FOREIGN KEY (`store_key`) REFERENCES `store_dimension` (`store_key`),
+  ADD CONSTRAINT `retail_sales_facts_ibfk_3` FOREIGN KEY (`promotion_key`) REFERENCES `promotion_dimension` (`promotion_key`),
+  ADD CONSTRAINT `retail_sales_facts_ibfk_4` FOREIGN KEY (`cashier_key`) REFERENCES `cashier_dimension` (`cashier_key`),
+  ADD CONSTRAINT `retail_sales_facts_ibfk_5` FOREIGN KEY (`payment_method_key`) REFERENCES `payment_method_dimension` (`payment_method_key`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
