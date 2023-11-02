@@ -1,6 +1,5 @@
 from flask import Flask, request, render_template, make_response, session, redirect
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
 import uuid
 from datetime import date, timedelta
 
@@ -30,7 +29,8 @@ class ProductDimension(db.Model):
     product_description = db.Column(db.String(255))
     brand_description = db.Column(db.String(255))
     category_description = db.Column(db.String(255))
-
+    cost = db.Column(db.Integer(11))
+    
 class StoreDimension(db.Model):
     store_key = db.Column(db.String(5), primary_key=True)
     store_number = db.Column(db.String(3))
@@ -241,6 +241,16 @@ def generate_unique_key():
 def get_holiday_dates():
     holiday_dates = ['2023-01-01', '2023-03-25', '2023-12-25', '2023-07-04', '2023-19-04', '2023-04-20', '2023-04-21', '2023-04-22', '2023-04-23', '2023-04-24', '2023-04-25']
     return holiday_dates
+
+@app.route('/query_gross_profit')
+def query_gross_profit():
+    pass
+
+
+
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
