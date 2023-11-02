@@ -6,10 +6,11 @@ from datetime import date, timedelta
 app = Flask(__name__)
 
 app.secret_key = 'Gudang_Data'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@127.0.0.1/gudang_data'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@127.0.0.1/testing_beth'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
+
 
 class DateDimension(db.Model):
     date_key = db.Column(db.Integer, primary_key=True)
@@ -62,12 +63,13 @@ class TravellerShopperDimension(db.Model):
 
 class RetailSalesFact(db.Model):
     __tablename__ = 'retail_sales_facts'
-    date_key = db.Column(db.Date, primary_key=True)
-    product_key = db.Column(db.String(10), primary_key=True)
-    store_key = db.Column(db.String(5), primary_key=True)
-    promotion_key = db.Column(db.String(255))
-    cashier_key = db.Column(db.String(255))
-    payment_method_key = db.Column(db.String(255))
+    retail_id = db.Column(db.String(10), primary_key=True)
+    date_key = db.Column(db.Date)
+    product_key = db.Column(db.String(10), db.ForeignKey('product_dimension.product_key'))
+    store_key = db.Column(db.String(5), db.ForeignKey('store_dimension.store_key'))
+    promotion_key = db.Column(db.String(25), db.ForeignKey('promotion_dimension.promotion_key'))
+    cashier_key = db.Column(db.String(10), db.ForeignKey('cashier_dimension.cashier_key'))
+    payment_method_key = db.Column(db.String(25), db.ForeignKey('payment_method_dimension.payment_method_key'))
     pos_transaction = db.Column(db.String(255))
     sales_quantity = db.Column(db.Integer)
     regular_unit_price = db.Column(db.Numeric(10, 2))
@@ -95,64 +97,15 @@ class RetailSalesFact(db.Model):
         self.extended_cost_dollar_amount = extended_cost_dollar_amount
         self.extended_gross_profit_dollar_amount = extended_gross_profit_dollar_amount
 
-
-@app.route('/create_date_dimension', methods=['POST'])
+@app.route('/create_all_tables')
 def create_date_dimension_table():
     try:
         db.create_all()
-        return "Tabel date_dimension telah berhasil dibuat."
+        return "Tabel database sudah dibuat."
     except Exception as e:
         return f"Error: {e}"
 
-@app.route('/create_product_dimension', methods=['POST'])
-def create_product_dimension_table():
-    try:
-        db.create_all()
-        return "Tabel Product_Dimension telah berhasil dibuat."
-    except Exception as e:
-        return f"Error: {e}"
-
-@app.route('/create_store_dimension', methods=['POST'])
-def create_store_dimension_table():
-    try:
-        db.create_all()
-        return "Tabel store_dimension telah berhasil dibuat."
-    except Exception as e:
-        return f"Error: {e}"
-
-@app.route('/create_cashier_dimension', methods=['POST'])
-def create_cashier_dimension_table():
-    try:
-        db.create_all()
-        return "Tabel cashier_dimension telah berhasil dibuat."
-    except Exception as e:
-        return f"Error: {e}"
-
-@app.route('/create_promotion_dimension', methods=['POST'])
-def create_promotion_dimension_table():
-    try:
-        db.create_all()
-        return "Tabel Promotion_Dimension telah berhasil dibuat."
-    except Exception as e:
-        return f"Error: {e}"
-
-@app.route('/create_payment_method_dimension', methods=['POST'])
-def create_payment_method_dimension_table():
-    try:
-        db.create_all()
-        return "Tabel Payment_Method_Dimension telah berhasil dibuat."
-    except Exception as e:
-        return f"Error: {e}"
-
-@app.route('/create_traveller_shopper_dimension', methods=['POST'])
-def create_traveller_shopper_dimension_table():
-    try:
-        db.create_all()
-        return "Tabel Traveller_Shopper_Dimension telah berhasil dibuat."
-    except Exception as e:
-        return f"Error: {e}"
-
-@app.route('/insert_cashier_data', methods=['POST'])
+@app.route('/insert_cashier_data')
 def insert_cashier_data():
     try:
         data = request.get_json()
@@ -173,7 +126,7 @@ def insert_cashier_data():
     except Exception as e:
         return f"Error: {e}"
 
-@app.route('/insert_store_data', methods=['POST'])
+@app.route('/insert_store_data')
 def insert_store_data():
     try:
         data = request.get_json()
@@ -198,7 +151,7 @@ def insert_store_data():
     except Exception as e:
         return f"Error: {e}"
 
-@app.route('/insert_date_data', methods=['POST'])
+@app.route('/insert_date_data')
 def insert_date_data():
     try:
         start_date = date(2023, 1, 1)
