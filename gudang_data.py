@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, make_response, session, redirect
+from flask import Flask, request, render_template, make_response, redirect
 from flask_sqlalchemy import SQLAlchemy
 import uuid
 from datetime import date, timedelta
@@ -11,8 +11,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-
 class DateDimension(db.Model):
+    __tablename__ = 'date_dimension'
     date_key = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.Date)
     full_date_desc = db.Column(db.String(255))
@@ -25,14 +25,16 @@ class DateDimension(db.Model):
     weekday_indicator = db.Column(db.String(255))
 
 class ProductDimension(db.Model):
-    product_key = db.Column(db.String(10), primary_key=True, unique=True)
-    SKU_number = db.Column(db.String(13))
+    __tablename__ = 'product_dimension'
+    product_key = db.Column(db.String(25), primary_key=True, unique=True)
+    SKU_number = db.Column(db.String(25))
     product_description = db.Column(db.String(255))
     brand_description = db.Column(db.String(255))
     category_description = db.Column(db.String(255))
     cost = db.Column(db.Integer())
 
 class StoreDimension(db.Model):
+    __tablename__ = 'store_dimension'
     store_key = db.Column(db.String(5), primary_key=True)
     store_number = db.Column(db.String(3))
     store_name = db.Column(db.String(255))
@@ -40,6 +42,7 @@ class StoreDimension(db.Model):
     store_region = db.Column(db.String(255))
 
 class CashierDimension(db.Model):
+    __tablename__ = 'promotion_dimension'
     cashier_key = db.Column(db.String(10), primary_key=True)
     cashier_employee_id = db.Column(db.String(10))
     cashier_name = db.Column(db.String(255))
@@ -53,11 +56,13 @@ class PromotionDimension(db.Model):
     promotion_end_date = db.Column(db.Date)
 
 class PaymentMethodDimension(db.Model):
+    __tablename__ = 'payment_method_dimension'
     payment_method_key = db.Column(db.String(25), primary_key=True)
     payment_method_description = db.Column(db.String(255))
     payment_method_group = db.Column(db.String(25))
 
 class TravellerShopperDimension(db.Model):
+    __tablename__ = 'traveller_shopper_dimension'
     traveller_id = db.Column(db.String(10), primary_key=True)
     traveller_type = db.Column(db.String(25))
 
@@ -233,25 +238,21 @@ def query_gross_profit():
 
 @app.route('/gross_margin')
 def gross_margin():
-    # Replace the hardcoded values with actual values or request parameters
-    store_key = "2123"  # Replace with the store key you want to query
-    date_key = "2023-11-02"  # Replace with the date key you want to query
-    product_key = "1035453804963260181506960"  # Replace with the product key you want to query
+    store_key = "2123"
+    date_key = "2023-11-02"
+    product_key = "1035453804963260181506960"
 
-    # Filter the data for the specified store, date, and product
     query = RetailSalesFact.query.filter(
         RetailSalesFact.store_key == store_key,
         RetailSalesFact.date_key == date_key,
         RetailSalesFact.product_key == product_key
     )
 
-    # Calculate the total sales and total cost for the filtered data
     results = query.with_entities(RetailSalesFact.extended_sales_dollar_amount, RetailSalesFact.extended_cost_dollar_amount).all()
 
     total_sales = sum(result[0] for result in results)
     total_cost = sum(result[1] for result in results)
 
-    # Calculate the gross margin
     gross_margin = total_sales - total_cost
 
     return f"Gross Margin for Store {store_key}, Date {date_key}, Product {product_key}: ${gross_margin:.2f}"
