@@ -422,7 +422,7 @@ def insert_retail_sales_fact(date_key, product_key, store_key, promotion_key, ca
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
         """
         values = (date_key, product_key, store_key, promotion_key, cashier_key, payment_method_key, pos_transaction, sales_quantity, regular_unit_price, discount_unit_price, net_unit_price, extended_discount_dollar_amount, extended_sales_dollar_amount, extended_cost_dollar_amount, extended_gross_profit_dollar_amount)
-
+        
         try:
             mycursor.execute(insert_query, values)
             mydb.commit()
@@ -517,6 +517,7 @@ if __name__ == "__main__":
     # '2023-11-02', '1035453804963260181506960', '2123', '1293676579042382297136886',
     # 'CASHIER167', '2497412005993698094243451', 'qqeqwe', 11.0, 11.0, 11.0,
     # 11.0, 100.0, 30.0, 11.0, 999999.99)
+    insert_promotion_data("No Promotion", "Offline", '2023-01-01', '2023-12-31')
 
     
 
