@@ -441,7 +441,7 @@ def insert_payment_data(payment_method_description, payment_method_group):
         
         # Menghasilkan UUID sebagai payment_key
         payment_method_key = int(uuid.uuid4())
-
+        print(payment_method_key)
         insert_query = "INSERT INTO payment_method_dimension (payment_method_key, payment_method_description, payment_method_group) VALUES (%s, %s, %s)"
 
         data = (payment_method_key, payment_method_description, payment_method_group)
@@ -475,7 +475,7 @@ def insert_promotion_data(promotion_name, promotion_media_type, promotion_begin_
         try:
             mycursor.execute(insert_query, data)
             mydb.commit()
-            print("Data produk telah berhasil disisipkan.")
+            print("Data promotion telah berhasil disisipkan.")
         except mysql.connector.Error as err:
             print(f"Error: {err}")
 
@@ -484,6 +484,7 @@ def insert_promotion_data(promotion_name, promotion_media_type, promotion_begin_
 
 
 def init_main():
+    pass
     # create_retail_sales_facts_table()
     # create_date_dimension_table()
     # create_store_dimension_table()
@@ -492,17 +493,31 @@ def init_main():
     # create_promotion_dimension_table()
     # create_traveller_shopper_dimension_table()
     # insert_date_data()
-    # insert_store_data(123, "Indomaret", "Jakarta Pusat", "Jakarta")
+    # insert_store_data(2123,123, "Indomaret", "Jakarta Pusat", "Jakarta")
     # insert_cashier_data(212100159, "John Doe")
     # insert_product_data("Susu", "Frisian Flag", "Susu Anak")
     # insert_product_data("Susu Cokelat", "Ultramilk", "Susu Anak")
     # insert_payment_data("GoPay", "Digital Wallet")
     # insert_promotion_data("Valentine", "Online", '2023-02-13', '2023-07-14')
-    insert_retail_sales_fact(
-    '2023-11-02', '1035453804963260181506960', '2123', '1293676579042382297136886',
-    'CASHIER167', '2497412005993698094243451', 'qqeqwe', 11.0, 11.0, 11.0,
-    11.0, 100.0, 30.0, 11.0, 999999.99
-)
+#     insert_retail_sales_fact(
+#     '2023-11-02', '1035453804963260181506960', '2123', '1293676579042382297136886',
+#     'CASHIER167', '2497412005993698094243451', 'qqeqwe', 11.0, 11.0, 11.0,
+#     11.0, 100.0, 30.0, 11.0, 999999.99
+# )
+
+# Extended disc dollar amount = qty * disc_unit_price.
+# Extended sales dollar amount = qty * net_price.
+# Extended cost dollar amount = qty * unit_cost
+# Pos_transaction = Online/Offline
+# Everything else can be randomized 
 
 if __name__ == "__main__":
     init_main()
+    # insert_retail_sales_fact(
+    # '2023-11-02', '1035453804963260181506960', '2123', '1293676579042382297136886',
+    # 'CASHIER167', '2497412005993698094243451', 'qqeqwe', 11.0, 11.0, 11.0,
+    # 11.0, 100.0, 30.0, 11.0, 999999.99)
+
+    
+
+    
