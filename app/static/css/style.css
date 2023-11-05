@@ -13,6 +13,12 @@ body {
     --black1: #222;
     --black2: #999;
 }
+.card-body {
+    position: relative;
+    max-height: 400px; /* Sesuaikan tinggi maksimum sesuai kebutuhan */
+    overflow-y: auto; /* Tambahkan scrollbar vertikal jika kontennya terlalu panjang */
+}
+
 
 /*------------ Login ------------*/	
 .box-area {

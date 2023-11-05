@@ -13,8 +13,8 @@
             </tr>
         </thead>
         <tbody scope="row" id="data-table-body">
-            {% if cashiers %}
-                {% for cashier in cashiers %}
+            {% if cashier_dimension %}
+                {% for cashier in cashier_dimension %}
                     <tr>
                         <td>{{ cashier.cashier_key }}</td>
                         <td>{{ cashier.cashier_employee_id }}</td>
