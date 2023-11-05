@@ -1,11 +1,111 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <h1>Hello Guis</h1>
-</body>
-</html>
+{% extends "layout.html" %}
+{% block body %}
+<div class="inner m-5">
+	<h2 class="text-center pb-3 text-primary">Chart</h2>
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <div class="card h-100">
+              <div class="card-header">
+                <span class="me-2"><i class="bi bi-bar-chart-fill"></i></span>
+                Gross Profit
+              </div>
+              <div class="card-body">
+                <canvas id="grossProfitChart" width="400" height="200"></canvas>
+                <div class="filter d-flex">
+                    <div class="dropdown mt-3 me-2">
+                      <button class="btn btn-light dropdown-toggle" type="button" id="filterDropdown1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Store
+                      </button>
+                      <div class="dropdown-menu" aria-labelledby="filterDropdown1">
+                        <a class="dropdown-item" href="#" data-filter="option1">Option 1</a>
+                        <a class="dropdown-item" href="#" data-filter="option2">Option 2</a>
+                      </div>
+                    </div>
+                    <div class="dropdown mt-3 me-2">
+                        <button class="btn btn-light dropdown-toggle" type="button" id="filterDropdown1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          Store
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="filterDropdown1">
+                          <a class="dropdown-item" href="#" data-filter="option1">Option 1</a>
+                          <a class="dropdown-item" href="#" data-filter="option2">Option 2</a>
+                        </div>
+                    </div>
+                    <div class="col mt-3 me-2" id="start-date">
+                      <input type="date" class="form-control">
+                    </div>
+                    <div class="col mt-3" id="end-date">
+                        <input type="date" class="form-control">
+                    </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+        <div class="col-md-6 mb-3">
+          <div class="card h-100">
+            <div class="card-header">
+              <span class="me-2"><i class="bi bi-bar-chart-fill"></i></span>
+              Gross Margin
+            </div>
+            <div class="card-body">
+              <canvas id="grossMarginChart" width="400" height="200"></canvas>
+              <!-- Dropdown filter -->
+              <div class="filter d-flex">
+                <div class="dropdown mt-3 me-2">
+                  <button class="btn btn-light dropdown-toggle" type="button" id="filterDropdown1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Store
+                  </button>
+                  <div class="dropdown-menu" aria-labelledby="filterDropdown1">
+                    <a class="dropdown-item" href="#" data-filter="option1">Option 1</a>
+                    <a class="dropdown-item" href="#" data-filter="option2">Option 2</a>
+                  </div>
+                </div>              
+                <div class="dropdown mt-3 me-2">
+                  <button class="btn btn-light dropdown-toggle" type="button" id="filterDropdown2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Products
+                  </button>
+                  <div class="dropdown-menu" aria-labelledby="filterDropdown2">
+                    <a class="dropdown-item" href="#" data-filter="option3">Option 3</a>
+                    <a class="dropdown-item" href="#" data-filter="option4">Option 4</a>
+                  </div>
+                </div>
+                <div class="col mt-3 me-2" id="start-date">
+                    <input type="date" class="form-control">
+                </div>
+                <div class="col mt-3" id="end-date">
+                    <input type="date" class="form-control">
+                </div>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.0.2/dist/chart.min.js"></script>
+
+<script>
+// Code to handle dropdown selection and apply filters to charts
+document.addEventListener("DOMContentLoaded", function() {
+  const grossProfitChart = new Chart(document.getElementById("grossProfitChart").getContext("2d"), {
+    // Konfigurasi chart Gross Profit
+    // ...
+  });
+
+  const grossMarginChart = new Chart(document.getElementById("grossMarginChart").getContext("2d"), {
+    // Konfigurasi chart Gross Margin
+    // ...
+  });
+
+  // Menangani perubahan dropdown dan menerapkan filter
+  document.querySelectorAll(".dropdown-item").forEach(function(item) {
+    item.addEventListener("click", function(e) {
+      e.preventDefault();
+      const filterValue = e.target.getAttribute("data-filter");
+      // Lakukan sesuatu dengan nilai filter, seperti mengubah data chart
+      // Anda dapat memanggil fungsi atau mengubah data chart sesuai filterValue
+    });
+  });
+});
+</script>
+
+{% endblock %}
