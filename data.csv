@@ -1,5 +1,1 @@
 Date Key,Product Key,Store Key,Promotion Key,Cashier Key,Payment Method Key,POS Transaction,Sales Quantity,Regular Unit Price,Discount Unit Price,Net Unit Price,Extended Discount Dollar Amount,Extended Sales Dollar Amount,Extended Cost Dollar Amount,Extended Gross Profit Dollar Amount
-2023-11-01,Product 1,Store 1,Promotion 1,Cashier 1,Payment Method 1,Transaction 001,5,10.00,2.00,8.00,1.50,40.00,30.00
-2023-11-02,Product 2,Store 2,Promotion 2,Cashier 2,Payment Method 2,Transaction 002,3,12.50,3.50,9.00,2.00,45.00,35.00
-2023-11-03,Product 3,Store 3,Promotion 3,Cashier 3,Payment Method 3,Transaction 003,7,15.00,4.00,11.00,3.00,60.00,50.00
-2023-11-04,Product 4,Store 4,Promotion 4,Cashier 4,Payment Method 4,Transaction 004,4,9.50,1.50,8.00,1.00,38.00,30.00

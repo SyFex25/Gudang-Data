@@ -11,9 +11,10 @@ from flask import Flask, request, render_template, redirect, url_for
 from models import db, DateDimension, ProductDimension, StoreDimension, CashierDimension, PromotionDimension, PaymentMethodDimension, TravellerShopperDimension, RetailSalesFact
 
 app = Flask(__name__)
+from import_data import scheduler
 
 app.secret_key = 'Gudang_Data'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@127.0.0.1/testing_beth'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@127.0.0.1/testing_gd'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
@@ -21,7 +22,9 @@ db.init_app(app)
 
 @app.route('/')
 def display_chart():
-    return render_template('index.html')
+    store_dimension = StoreDimension.query.all()
+    product_dimension = ProductDimension.query.all()
+    return render_template('index.html', store_dimension=store_dimension, product_dimension=product_dimension)
 
 @app.route('/fact-table')
 def display_fact_table():

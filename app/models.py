@@ -30,6 +30,8 @@ class StoreDimension(db.Model):
     store_name = db.Column(db.String(255))
     store_district = db.Column(db.String(255))
     store_region = db.Column(db.String(255))
+    def __repr__(self):
+        return f'<StoreDimension store_key={self.store_key}>'
 
 class CashierDimension(db.Model):
     __tablename__ = 'cashier_dimension'
