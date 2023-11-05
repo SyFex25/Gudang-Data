@@ -9,11 +9,15 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, request, render_template, redirect, url_for
 from models import db, DateDimension, ProductDimension, StoreDimension, CashierDimension, PromotionDimension, PaymentMethodDimension, TravellerShopperDimension, RetailSalesFact
+
 app = Flask(__name__)
 
 app.secret_key = 'Gudang_Data'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@127.0.0.1/testing_beth'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db.init_app(app)
+# migrate = Migrate(app, db)
 
 @app.route('/')
 def display_chart():
@@ -77,3 +81,4 @@ def gross_margin():
     gross_margin = total_sales - total_cost
 
     return f"Gross Margin for Store {store_key}, Date {date_key}, Product {product_key}: ${gross_margin:.2f}"
+
