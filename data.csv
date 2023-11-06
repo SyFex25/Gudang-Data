@@ -1,5 +1,1 @@
-store_name,store_address,store_phone,store_id,cashier_id,cashier_name,transaction_id,transaction_date,price,product_qty,product_id,product_name,discount,nett_price,payment_method,transaction_total
-Store A,123 Main Street,(123) 456-7890,001,Cashier1,John Doe,1001,2023-10-26,10.00,5,P001,Product 1,0.50,47.50,Credit Card,1001,100.00
-Store A,123 Main Street,(123) 456-7890,001,Cashier1,John Doe,1002,2023-10-26,20.00,3,P002,Product 2,1.00,59.00,Debit Card,1002,60.00
-Store B,456 Oak Avenue,(456) 789-1234,002,Cashier2,Jane Smith,1003,2023-10-27,15.00,2,P001,Product 1,0.75,28.50,Cash,1003,30.00
-Store B,456 Oak Avenue,(456) 789-1234,002,Cashier2,Jane Smith,1004,2023-10-27,5.00,10,P003,Product 3,0.25,47.50,Debit Card,1004,50.00
+Date Key,Product Key,Store Key,Promotion Key,Cashier Key,Payment Method Key,POS Transaction,Sales Quantity,Regular Unit Price,Discount Unit Price,Net Unit Price,Extended Discount Dollar Amount,Extended Sales Dollar Amount,Extended Cost Dollar Amount,Extended Gross Profit Dollar Amount

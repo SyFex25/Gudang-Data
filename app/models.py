@@ -16,7 +16,7 @@ class DateDimension(db.Model):
 
 class ProductDimension(db.Model):
     __tablename__ = 'product_dimension'
-    product_key = db.Column(db.String(25), primary_key=True, unique=True)
+    product_key = db.Column(db.String(50), primary_key=True, unique=True)
     SKU_number = db.Column(db.String(25))
     product_description = db.Column(db.String(255))
     brand_description = db.Column(db.String(255))
@@ -30,15 +30,18 @@ class StoreDimension(db.Model):
     store_name = db.Column(db.String(255))
     store_district = db.Column(db.String(255))
     store_region = db.Column(db.String(255))
+    def __repr__(self):
+        return f'<StoreDimension store_key={self.store_key}>'
 
 class CashierDimension(db.Model):
-    __tablename__ = 'promotion_dimension'
+    __tablename__ = 'cashier_dimension'
     cashier_key = db.Column(db.String(10), primary_key=True)
     cashier_employee_id = db.Column(db.String(10))
     cashier_name = db.Column(db.String(255))
 
 class PromotionDimension(db.Model):
-    promotion_key = db.Column(db.String(25), primary_key=True)
+    __tablename__ = 'promotion_dimension'
+    promotion_key = db.Column(db.String(50), primary_key=True)
     promotion_code = db.Column(db.String(25))
     promotion_name = db.Column(db.String(25))
     promotion_media_type = db.Column(db.String(25))
@@ -47,7 +50,7 @@ class PromotionDimension(db.Model):
 
 class PaymentMethodDimension(db.Model):
     __tablename__ = 'payment_method_dimension'
-    payment_method_key = db.Column(db.String(25), primary_key=True)
+    payment_method_key = db.Column(db.String(50), primary_key=True)
     payment_method_description = db.Column(db.String(255))
     payment_method_group = db.Column(db.String(25))
 
@@ -58,13 +61,13 @@ class TravellerShopperDimension(db.Model):
 
 class RetailSalesFact(db.Model):
     __tablename__ = 'retail_sales_facts'
-    retail_id = db.Column(db.String(10), primary_key=True)
-    date_key = db.Column(db.Date)
-    product_key = db.Column(db.String(10), db.ForeignKey('product_dimension.product_key'))
+    retail_id = db.Column(db.Integer, primary_key=True)
+    date_key = db.Column(db.Integer, db.ForeignKey('date_dimension.date_key'))
+    product_key = db.Column(db.String(50), db.ForeignKey('product_dimension.product_key'))
     store_key = db.Column(db.String(5), db.ForeignKey('store_dimension.store_key'))
-    promotion_key = db.Column(db.String(25), db.ForeignKey('promotion_dimension.promotion_key'))
+    promotion_key = db.Column(db.String(50), db.ForeignKey('promotion_dimension.promotion_key'))
     cashier_key = db.Column(db.String(10), db.ForeignKey('cashier_dimension.cashier_key'))
-    payment_method_key = db.Column(db.String(25), db.ForeignKey('payment_method_dimension.payment_method_key'))
+    payment_method_key = db.Column(db.String(50), db.ForeignKey('payment_method_dimension.payment_method_key'))
     pos_transaction = db.Column(db.String(255))
     sales_quantity = db.Column(db.Integer)
     regular_unit_price = db.Column(db.Numeric(10, 2))

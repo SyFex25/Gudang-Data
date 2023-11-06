@@ -1,0 +1,60 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="inner m-5">
+    <h2 class="text-center pb-3 text-primary">Retail Facts Table</h2>
+    <div class="overflow-x-auto">
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">No</th>
+                    <th scope="col">Date Key</th>
+                    <th scope="col">Product Key</th>
+                    <th scope="col">Store Key</th>
+                    <th scope="col">Promotion Key</th>
+                    <th scope="col">Cashier Key</th>
+                    <th scope="col">Payment Method Key</th>
+                    <th scope="col">POS Transaction</th>
+                    <th scope="col">Sales Quantity</th>
+                    <th scope="col">Regular Unit Price</th>
+                    <th scope="col">Discount Unit Price</th>
+                    <th scope="col">Net Unit Price</th>
+                    <th scope="col">Extended Discount Dollar Amount</th>
+                    <th scope="col">Extended Sales Dollar Amount</th>
+                    <th scope="col">Extended Cost Dollar Amount</th>
+                    <th scope="col">Extended Gross Profit Dollar Amount</th>
+                </tr>
+            </thead>
+            <tbody scope="row" id="data-table-body">
+                {% if retail_sales_facts %}
+                    {% for retail_sales_fact in retail_sales_facts %}
+                        <tr>
+                            <th scope="row">{{ loop.index }}</th>
+                            <td>{{ retail_sales_fact.date_key }}</td>
+                            <td>{{ retail_sales_fact.product_key }}</td>
+                            <td>{{ retail_sales_fact.store_key }}</td>
+                            <td>{{ retail_sales_fact.promotion_key }}</td>
+                            <td>{{ retail_sales_fact.cashier_key }}</td>
+                            <td>{{ retail_sales_fact.payment_method_key }}</td>
+                            <td>{{ retail_sales_fact.pos_transaction }}</td>
+                            <td>{{ retail_sales_fact.sales_quantity }}</td>
+                            <td>{{ retail_sales_fact.regular_unit_price }}</td>
+                            <td>{{ retail_sales_fact.discount_unit_price }}</td>
+                            <td>{{ retail_sales_fact.net_unit_price }}</td>
+                            <td>{{ retail_sales_fact.extended_discount_dollar_amount }}</td>
+                            <td>{{ retail_sales_fact.extended_sales_dollar_amount }}</td>
+                            <td>{{ retail_sales_fact.extended_cost_dollar_amount }}</td>
+                            <td>{{ retail_sales_fact.extended_gross_profit_dollar_amount }}</td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="15">Tabel kosong</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+{% endblock %}
