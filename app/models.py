@@ -1,3 +1,4 @@
+#semua model database yang sudah kita buat
 from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
@@ -21,7 +22,11 @@ class ProductDimension(db.Model):
     product_description = db.Column(db.String(255))
     brand_description = db.Column(db.String(255))
     category_description = db.Column(db.String(255))
-    cost = db.Column(db.Integer())
+    price = db.Column(db.Float)
+    cost = db.Column(db.Float)
+    promotion_key = db.Column(db.String(50), db.ForeignKey('promotion_dimension.promotion_key'))
+    def __repr__(self):
+        return f'<ProductDimension product_key={self.product_key}>'
 
 class StoreDimension(db.Model):
     __tablename__ = 'store_dimension'
@@ -47,6 +52,8 @@ class PromotionDimension(db.Model):
     promotion_media_type = db.Column(db.String(25))
     promotion_begin_date = db.Column(db.Date)
     promotion_end_date = db.Column(db.Date)
+    def __repr__(self):
+        return f'<PromotionDimension promotion_key={self.promotion_key}>'
 
 class PaymentMethodDimension(db.Model):
     __tablename__ = 'payment_method_dimension'

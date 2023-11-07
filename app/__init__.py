@@ -1,7 +1,7 @@
-import base64
 import sys
 import os
 
+#supaya dapat mengimport beberapa hal di bawah ini -> untuk baca filenya 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(current_dir)
 
@@ -16,11 +16,12 @@ from import_data import scheduler
 
 app.secret_key = 'Gudang_Data'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@127.0.0.1/gudang_data_test'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@127.0.0.1/gudang_data_test' #bisa diganti dengan database yang kalian pakai 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
-# migrate = Migrate(app, db)
 
+#untuk routingnya
 @app.route('/')
 def display_chart():
     store_dimension = StoreDimension.query.all()
@@ -32,26 +33,12 @@ def display_fact_table():
     retail_sales_facts = RetailSalesFact.query.all()
     return render_template('fact_table.html', retail_sales_facts = retail_sales_facts)
 
-@app.route('/stores')
-def display_stores():
-    return render_template('stores.html')
-
-@app.route('/cashiers')
-def display_cashiers():
-    cashier_dimension = CashierDimension.query.all()
-    return render_template('cashiers.html', cashier_dimension=cashier_dimension)
-
-@app.route('/products')
-def display_products():
-    return render_template('products.html')
-
 @app.route('/promotions')
 def display_promotions():
-    return render_template('promotions.html')
-
-@app.route('/payment-methods')
-def display_payment_methods():
-    return render_template('payment_methods.html')
+    promotion_dimension = PromotionDimension.query.all()
+    retail_sales_facts = RetailSalesFact.query.all()
+    product_dimension = ProductDimension.query.all()
+    return render_template('promotions.html', promotion_dimension=promotion_dimension, retail_sales_facts=retail_sales_facts, product_dimension=product_dimension)
 
 @app.route('/query_gross_profit')
 def query_gross_profit():
