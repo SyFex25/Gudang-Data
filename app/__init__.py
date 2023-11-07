@@ -84,4 +84,3 @@ def gross_margin():
     gross_margin = total_sales - total_cost
 
     return f"Gross Margin for Store {store_key}, Date {date_key}, Product {product_key}: ${gross_margin:.2f}"
-
