@@ -1,127 +1,120 @@
 {% extends "layout.html" %}
 {% block body %}
 <div class="inner m-5">
-	<h2 class="text-center pb-3 text-primary">Chart</h2>
+    <h2 class="text-center pb-3 text-primary">Chart</h2>
     <div class="row">
         <div class="col-md-6 mb-3">
             <div class="card h-100">
-              <div class="card-header">
-                <span class="me-2"><i class="bi bi-bar-chart-fill"></i></span>
-                Gross Profit
-              </div>
-              <div class="card-body">
-                <canvas id="grossProfitChart" width="400" height="200"></canvas>
-                <div class="filter d-flex">
-                  <div class="dropdown mt-3 me-2">
-                    <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                      Store
-                    </button>
-                    <ul class="dropdown-menu">
-                      {% for store in store_dimension %}
-                      <li><a class="dropdown-item" href="/store_dimension/{{store.store_key}}">{{store.store_name}}</a></li>
-                      {% endfor %}
-                    </ul>
-                  </div>
-                  <div class="dropdown mt-3 me-2">
-                    <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                      Product
-                    </button>
-                    <ul class="dropdown-menu">
-                      {% for product in product_dimension %}
-                      <li><a class="dropdown-item" href="/product_dimension/{{product.product_key}}">{{product.product_description}}</a></li>
-                      {% endfor %}
-                    </ul>
-                  </div>
-                  <div class="col mt-3 me-2" id="start-date">
-                    <input type="date" class="form-control">
-                  </div>
-                  <div class="col mt-3" id="end-date">
-                      <input type="date" class="form-control">
-                  </div>
+                <div class="card-header">
+                    <span class="me-2"><i class="bi bi-bar-chart-fill"></i></span>
+                    Gross Profit
                 </div>
-              </div>
+                <div class="card-body">
+                    <canvas id="grossProfitChart" width="400" height="200"></canvas>
+                </div>
             </div>
-          </div>
+        </div>
 
         <div class="col-md-6 mb-3">
-          <div class="card h-100">
-            <div class="card-header">
-              <span class="me-2"><i class="bi bi-bar-chart-fill"></i></span>
-              Gross Margin
-            </div>
-            <div class="card-body">
-              <canvas id="grossMarginChart" width="400" height="200"></canvas>
-              <!-- Dropdown filter -->
-              <div class="filter d-flex">
-                <div class="dropdown mt-3 me-2">
-                  <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Store
-                  </button>
-                  <ul class="dropdown-menu">
-                    {% for store in store_dimension %}
-                    <li><a class="dropdown-item" href="/store_dimension/{{store.store_key}}">{{store.store_name}}</a></li>
-                    {% endfor %}
-                  </ul>
+            <div class="card h-100">
+                <div class="card-header">
+                    <span class="me-2"><i class="bi bi-bar-chart-fill"></i></span>
+                    Gross Margin
                 </div>
-                <div class="dropdown mt-3 me-2">
-                  <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Product
-                  </button>
-                  <ul class="dropdown-menu">
-                    {% for product in product_dimension %}
-                    <li><a class="dropdown-item" href="/product_dimension/{{product.product_key}}">{{product.product_description}}</a></li>
-                    {% endfor %}
-                  </ul>
-                </div>
-                <div class="col mt-3 me-2" id="start-date">
-                  <input type="date" class="form-control">
-                </div>
-                <div class="col mt-3" id="end-date">
-                    <input type="date" class="form-control">
+                <div class="card-body">
+                    <canvas id="grossMarginChart" width="400" height="200"></canvas>
+                    <!-- Dropdown filter -->
+                    <div class="filter d-flex">
+                        <div class="dropdown mt-3 me-2">
+                            <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Product
+                            </button>
+                            <ul class="dropdown-menu">
+                                {% for product in product_dimension %}
+                                <li><a class="dropdown-item" href="#" onclick="selectProduct('{{ product.product_key }}', '{{ product.product_description }}')">{{ product.product_description }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="col mt-3 me-2" id="start-date">
+                            <input type="date" class="form-control" id="startDate">
+                        </div>
+                        <div class="col mt-3" id="end-date">
+                            <input type="date" class="form-control" id="endDate">
+                        </div>
+                        <button class="btn btn-primary mt-3" onclick="updateGrossMarginChart()">Update</button>
+                    </div>
                 </div>
             </div>
-            </div>
-          </div>
         </div>
-      </div>
+    </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.0.2/dist/chart.min.js"></script>
 <script>
-  // Ini adalah contoh data yang harus diganti dengan data yang sesuai
-  const dataGrossProfit = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
-    datasets: [{
-      label: 'Gross Profit',
-      data: [100, 200, 150, 250, 180],
-      backgroundColor: 'rgba(75, 192, 192, 0.2)',
-      borderColor: 'rgba(75, 192, 192, 1)',
-      borderWidth: 1
-    }]
-  };
-  
-  const dataGrossMargin = {
-    labels: ['Q1', 'Q2', 'Q3', 'Q4'],
-    datasets: [{
-      label: 'Gross Margin',
-      data: [20, 25, 22, 30],
-      backgroundColor: 'rgba(255, 99, 132, 0.2)',
-      borderColor: 'rgba(255, 99, 132, 1)',
-      borderWidth: 1
-    }]
-  };
-  
-  // Inisialisasi grafik Gross Profit
-  const grossProfitChart = new Chart(document.getElementById('grossProfitChart'), {
-    type: 'bar',
-    data: dataGrossProfit
-  });
-  
-  // Inisialisasi grafik Gross Margin
-  const grossMarginChart = new Chart(document.getElementById('grossMarginChart'), {
-    type: 'bar',
-    data: dataGrossMargin
-  });
-  </script>
-  
+    let selectedProductKey = null;
+    let selectedProductDescription = null;
 
+    // Function to select a product
+    function selectProduct(productKey, productDescription) {
+        selectedProductKey = productKey;
+        selectedProductDescription = productDescription;
+        document.querySelector('.btn-light.dropdown-toggle').innerHTML = `Product: ${selectedProductDescription}`;
+    }
+
+    // Inisialisasi grafik Gross Margin
+    const grossMarginChart = new Chart(document.getElementById('grossMarginChart'), {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Gross Margin',
+                data: [],
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Gross Margin'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Store'
+                    }
+                }
+            }
+        }
+    });
+
+    // Function to update the Gross Margin chart with data from /gross_margin_data
+    function updateGrossMarginChart() {
+        // Get the selected start date and end date
+        const startDate = document.getElementById("startDate").value;
+        const endDate = document.getElementById("endDate").value;
+
+        if (selectedProductKey && startDate && endDate) {
+            // Send an AJAX request to fetch data from /gross_margin_data
+            fetch(`/gross_margin_data?product_key=${selectedProductKey}&start_date=${startDate}&end_date=${endDate}`)
+                .then(response => response.json())
+                .then(data => {
+                    const storeKeys = data.store_keys;  // Menggunakan store_keys
+                    const grossMarginValues = data.gross_margin_values;
+
+                    // Update the Gross Margin chart with the new data
+                    grossMarginChart.data.labels = storeKeys;  // Menggunakan storeKeys
+                    grossMarginChart.data.datasets[0].data = grossMarginValues;
+                    grossMarginChart.update();
+                });
+        } else {
+            alert("Please select a product, start date, and end date.");
+        }
+    }
+
+</script>
 {% endblock %}

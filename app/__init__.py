@@ -7,7 +7,8 @@ sys.path.append(current_dir)
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from flask import Flask, request, render_template, redirect, url_for
+from flask import Flask, request, render_template, redirect, url_for, jsonify
+from sqlalchemy import func
 from models import db, DateDimension, ProductDimension, StoreDimension, CashierDimension, PromotionDimension, PaymentMethodDimension, TravellerShopperDimension, RetailSalesFact
 
 app = Flask(__name__)
@@ -15,7 +16,7 @@ app = Flask(__name__)
 from import_data import scheduler
 
 app.secret_key = 'Gudang_Data'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@127.0.0.1/testing_gd'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@127.0.0.1/gudang_data_testing'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
@@ -65,23 +66,59 @@ def query_gross_profit():
 
     return "Done"
 
-@app.route('/gross_margin')
-def gross_margin():
-    store_key = "2123"
-    date_key = "2023-11-02"
-    product_key = "1035453804963260181506960"
+# @app.route('/gross_margin')
+# def gross_margin():
+#     store_key = "2123"
+#     date_key = "2023-11-02"
+#     product_key = "1035453804963260181506960"
 
-    query = RetailSalesFact.query.filter(
-        RetailSalesFact.store_key == store_key,
-        RetailSalesFact.date_key == date_key,
-        RetailSalesFact.product_key == product_key
-    )
+#     query = RetailSalesFact.query.filter(
+#         RetailSalesFact.store_key == store_key,
+#         RetailSalesFact.date_key == date_key,
+#         RetailSalesFact.product_key == product_key
+#     )
 
-    results = query.with_entities(RetailSalesFact.extended_sales_dollar_amount, RetailSalesFact.extended_cost_dollar_amount).all()
+#     results = query.with_entities(RetailSalesFact.extended_sales_dollar_amount, RetailSalesFact.extended_cost_dollar_amount).all()
 
-    total_sales = sum(result[0] for result in results)
-    total_cost = sum(result[1] for result in results)
+#     total_sales = sum(result[0] for result in results)
+#     total_cost = sum(result[1] for result in results)
     
-    gross_margin = total_sales - total_cost
+#     gross_margin = total_sales - total_cost
 
-    return f"Gross Margin for Store {store_key}, Date {date_key}, Product {product_key}: ${gross_margin:.2f}"
+#     return f"Gross Margin for Store {store_key}, Date {date_key}, Product {product_key}: ${gross_margin:.2f}"
+
+@app.route('/gross_margin_data')
+def gross_margin_data():
+    product_key = request.args.get('product_key')
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+
+    # Konversi tanggal dari format "YYYY-MM-DD" ke "YYYYMMDD" integer
+    start_date = int(start_date.replace("-", ""))
+    end_date = int(end_date.replace("-", ""))
+
+    # Query data margin sesuai dengan produk dan rentang tanggal
+    query = db.session.query(
+        StoreDimension.store_key,
+        func.sum(RetailSalesFact.extended_gross_profit_dollar_amount).label('total_profit'),
+        func.sum(RetailSalesFact.extended_sales_dollar_amount).label('total_sales')
+    ).join(StoreDimension, RetailSalesFact.store_key == StoreDimension.store_key).filter(
+        RetailSalesFact.product_key == product_key,
+        RetailSalesFact.date_key >= start_date,
+        RetailSalesFact.date_key <= end_date
+    ).group_by(StoreDimension.store_key)
+
+    results = query.all()
+
+    # Membuat daftar store_key dan margin
+    store_keys = [result[0] for result in results]
+    gross_margin_values = [(result[1] / result[2] * 100) if result[2] else 0 for result in results]
+    print('gross margin', gross_margin_values)
+
+    data = {
+        "store_keys": store_keys,
+        "gross_margin_values": gross_margin_values
+    }
+
+    return jsonify(data)
+
