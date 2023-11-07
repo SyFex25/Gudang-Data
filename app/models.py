@@ -24,6 +24,7 @@ class ProductDimension(db.Model):
     category_description = db.Column(db.String(255))
     price = db.Column(db.Float)
     cost = db.Column(db.Float)
+    promotion_key = db.Column(db.String(50), db.ForeignKey('promotion_dimension.promotion_key'))
     def __repr__(self):
         return f'<ProductDimension product_key={self.product_key}>'
 
