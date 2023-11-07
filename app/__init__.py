@@ -11,6 +11,7 @@ from flask import Flask, request, render_template, redirect, url_for
 from models import db, DateDimension, ProductDimension, StoreDimension, CashierDimension, PromotionDimension, PaymentMethodDimension, TravellerShopperDimension, RetailSalesFact
 
 app = Flask(__name__)
+
 from import_data import scheduler
 
 app.secret_key = 'Gudang_Data'
@@ -80,7 +81,7 @@ def gross_margin():
 
     total_sales = sum(result[0] for result in results)
     total_cost = sum(result[1] for result in results)
-
+    
     gross_margin = total_sales - total_cost
 
     return f"Gross Margin for Store {store_key}, Date {date_key}, Product {product_key}: ${gross_margin:.2f}"
