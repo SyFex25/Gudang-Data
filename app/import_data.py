@@ -1,3 +1,4 @@
+#untuk memasukkan data ke fact table dari csv setiap 30 detik 
 import csv
 import os
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -11,10 +12,9 @@ def import_data_from_csv():
     with app.app_context():
         data_to_remove = []
 
-        # Membaca data dari file CSV
         with open('data.csv', 'r') as csv_file:
             csv_reader = csv.DictReader(csv_file)
-            header = csv_reader.fieldnames  # Ambil nama kolom dari header
+            header = csv_reader.fieldnames  
             data_to_remove.append(header)
 
             for row in csv_reader:
@@ -39,11 +39,10 @@ def import_data_from_csv():
 
         db.session.commit()
 
-        # Menulis data yang tidak dihapus (header) kembali ke file CSV
         with open('data.csv', 'w', newline='') as csv_file:
             csv_writer = csv.DictWriter(csv_file, fieldnames=header)
             csv_writer.writeheader()
-            csv_writer.writerows(data_to_remove[1:])  # Menulis data selain header
+            csv_writer.writerows(data_to_remove[1:]) 
 
     return "Data has been imported successfully and removed from CSV"
 
