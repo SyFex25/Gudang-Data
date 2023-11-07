@@ -18,7 +18,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@127.0.0.1/gudang_data_tes
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
-# migrate = Migrate(app, db)
 
 #untuk routingnya
 @app.route('/')
@@ -35,7 +34,9 @@ def display_fact_table():
 @app.route('/promotions')
 def display_promotions():
     promotion_dimension = PromotionDimension.query.all()
-    return render_template('promotions.html', promotion_dimension=promotion_dimension)
+    retail_sales_facts = RetailSalesFact.query.all()
+    product_dimension = ProductDimension.query.all()
+    return render_template('promotions.html', promotion_dimension=promotion_dimension, retail_sales_facts=retail_sales_facts, product_dimension=product_dimension)
 
 @app.route('/query_gross_profit')
 def query_gross_profit():
