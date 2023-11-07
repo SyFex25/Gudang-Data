@@ -11,6 +11,26 @@
                 </div>
                 <div class="card-body">
                     <canvas id="grossProfitChart" width="400" height="200"></canvas>
+                    <!-- Dropdown filter -->
+                    <div class="filter d-flex">
+                      <div class="dropdown mt-3 me-2">
+                          <button class="btn btn-light dropdown-toggle" id="profit_button"type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                              Product
+                          </button>
+                          <ul class="dropdown-menu">
+                              {% for product in product_dimension %}
+                              <li><a class="dropdown-item" href="#" onclick="selectProduct('{{ product.product_key }}', '{{ product.product_description }}', 'profit')">{{ product.product_description }}</a></li>
+                              {% endfor %}
+                          </ul>
+                      </div>
+                      <div class="col mt-3 me-2" id="start-date">
+                          <input type="date" class="form-control" id="startDate">
+                      </div>
+                      <div class="col mt-3" id="end-date">
+                          <input type="date" class="form-control" id="endDate">
+                      </div>
+                      <button class="btn btn-primary mt-3" onclick="updateGrossProfitChart()">Update</button>
+                  </div>
                 </div>
             </div>
         </div>
@@ -26,20 +46,20 @@
                     <!-- Dropdown filter -->
                     <div class="filter d-flex">
                         <div class="dropdown mt-3 me-2">
-                            <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <button class="btn btn-light dropdown-toggle" id="margin_button"type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 Product
                             </button>
                             <ul class="dropdown-menu">
                                 {% for product in product_dimension %}
-                                <li><a class="dropdown-item" href="#" onclick="selectProduct('{{ product.product_key }}', '{{ product.product_description }}')">{{ product.product_description }}</a></li>
+                                <li><a class="dropdown-item" onclick="selectProduct('{{ product.product_key }}', '{{ product.product_description }}', 'margin')">{{ product.product_description }}</a></li>
                                 {% endfor %}
                             </ul>
                         </div>
                         <div class="col mt-3 me-2" id="start-date">
-                            <input type="date" class="form-control" id="startDate">
+                            <input type="date" class="form-control" id="startDateM">
                         </div>
                         <div class="col mt-3" id="end-date">
-                            <input type="date" class="form-control" id="endDate">
+                            <input type="date" class="form-control" id="endDateM">
                         </div>
                         <button class="btn btn-primary mt-3" onclick="updateGrossMarginChart()">Update</button>
                     </div>
@@ -47,18 +67,79 @@
             </div>
         </div>
     </div>
+    <div class="col-md-6 mb-3">
+        <div class="card h-100">
+            <div class="card-header">
+                <span class="me-2"><i class="bi bi-bar-chart-fill"></i></span>
+                Dollar Amount Extended Sale Promotion
+            </div>
+            <div class="card-body">
+                <canvas id="Promotion" width="400" height="200"></canvas>
+                <!-- Dropdown filter -->
+                <div class="filter d-flex">
+                    <div class="dropdown mt-3 me-2">
+                        <button class="btn btn-light dropdown-toggle" id="promotion_button"type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Product
+                        </button>
+                        <ul class="dropdown-menu">
+                            {% for product in product_dimension %}
+                            <li><a class="dropdown-item" onclick="selectProduct('{{ product.product_key }}', '{{ product.product_description }}', 'promotion')">{{ product.product_description }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="dropdown mt-3 me-2">
+                        <button class="btn btn-light dropdown-toggle" id="promotion_button2"type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Promotion
+                        </button>
+                        <ul class="dropdown-menu">
+                            {% for promotion in promotion_dimension %}
+                            <li><a class="dropdown-item" onclick="SelectPromotion('{{ promotion.promotion_name }}', '{{ promotion.promotion_key }}')">{{ promotion.promotion_name }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <button class="btn btn-primary mt-3" onclick="updatePromotionChart()">Update</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.0.2/dist/chart.min.js"></script>
 <script>
-    let selectedProductKey = null;
+    let selectedProductKeyM = null;
+    let selectedProductKeyP = null;
     let selectedProductDescription = null;
 
     // Function to select a product
-    function selectProduct(productKey, productDescription) {
-        selectedProductKey = productKey;
-        selectedProductDescription = productDescription;
-        document.querySelector('.btn-light.dropdown-toggle').innerHTML = `Product: ${selectedProductDescription}`;
+    function selectProduct(productKey, productDescription, type) {
+        if (type ==="profit"){
+          selectedProductKeyP = productKey;
+          selectedProductDescriptionP = productDescription;
+          document.querySelector('#profit_button').innerHTML = `${selectedProductDescriptionP}`;
+
+        }
+        else if (type === "margin"){
+          selectedProductKeyM = productKey;
+          selectedProductDescriptionM = productDescription;
+          document.querySelector('#margin_button').innerHTML = `${selectedProductDescriptionM}`;
+        }
+
+        else if (type === "promotion"){
+          selectedProductKeyPro = productKey;
+          selectedProductDescriptionPro = productDescription;
+          document.querySelector('#promotion_button').innerHTML = `${selectedProductDescriptionPro}`;
+        }
     }
+
+    function SelectPromotion(p_name, p_id) {
+        selected_promotion = p_name
+        selected_promotion_id = p_id
+        document.querySelector('#promotion_button2').innerHTML = `${selected_promotion}`;
+
+        }
+       
+    
+
 
     // Inisialisasi grafik Gross Margin
     const grossMarginChart = new Chart(document.getElementById('grossMarginChart'), {
@@ -94,13 +175,14 @@
 
     // Function to update the Gross Margin chart with data from /gross_margin_data
     function updateGrossMarginChart() {
+      
         // Get the selected start date and end date
-        const startDate = document.getElementById("startDate").value;
-        const endDate = document.getElementById("endDate").value;
+        const startDate = document.getElementById("startDateM").value;
+        const endDate = document.getElementById("endDateM").value;
 
-        if (selectedProductKey && startDate && endDate) {
+        if (selectedProductKeyM && startDate && endDate) {
             // Send an AJAX request to fetch data from /gross_margin_data
-            fetch(`/gross_margin_data?product_key=${selectedProductKey}&start_date=${startDate}&end_date=${endDate}`)
+            fetch(`/gross_margin_data?product_key=${selectedProductKeyM}&start_date=${startDate}&end_date=${endDate}`)
                 .then(response => response.json())
                 .then(data => {
                     const storeKeys = data.store_keys;  // Menggunakan store_keys
@@ -116,5 +198,114 @@
         }
     }
 
+    // Inisialisasi grafik Gross Profit
+    const grossProfitChart = new Chart(document.getElementById('grossProfitChart'), {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Gross Profit',
+                data: [],
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Gross Profit'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Store'
+                    }
+                }
+            }
+        }
+    });
+
+
+     // Function to update the Gross Profit chart with data from /gross_profit_data
+     function updateGrossProfitChart() {
+        // Get the selected start date and end date
+        const startDate = document.getElementById("startDate").value;
+        const endDate = document.getElementById("endDate").value;
+
+        if (selectedProductKeyP && startDate && endDate) {
+            // Send an AJAX request to fetch data from /gross_margin_data
+            fetch(`/gross_profit_data?product_key=${selectedProductKeyP}&start_date=${startDate}&end_date=${endDate}`)
+                .then(response => response.json())
+                .then(data => {
+                    const storeKeys = data.store_keys;  // Menggunakan store_keys
+                    const grossProfitValues = data.gross_profit_values;
+
+                    // Update the Gross Profit chart with the new data
+                    grossProfitChart.data.labels = storeKeys;  // Menggunakan storeKeys
+                    grossProfitChart.data.datasets[0].data = grossProfitValues;
+                    grossProfitChart.update();
+                });
+        } else {
+            alert("Please select a product, start date, and end date.");
+        }
+    }
+
+    // Inisialisasi grafik Gross Margin
+    const PromotionChart = new Chart(document.getElementById('Promotion'), {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Sales Dollar Amount',
+                data: [],
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Sales Dollar Amount'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Store'
+                    }
+                }
+            }
+        }
+    });
+
+
+    function updatePromotionChart() {
+        const promotion_name = document.querySelector('#promotion_button2').innerHTML;
+        if (selectedProductKeyPro && promotion_name) {
+            // Send an AJAX request to fetch data from /gross_margin_data
+            fetch(`/promotion_data?product_key=${selectedProductKeyP}&promotion_name=${promotion_name}`)
+                .then(response => response.json())
+                .then(data => {
+                    const storeKeys = data.store_keys;  // Menggunakan store_keys
+                    const promotion_values = data.promotion_values;
+
+                    // Update the Gross Profit chart with the new data
+                    PromotionChart.data.labels = storeKeys;  // Menggunakan storeKeys
+                    PromotionChart.data.datasets[0].data = promotion_values;
+                    PromotionChart.update();
+                });
+        } else {
+            alert("Please select a product, start date, and end date.");
+        }
+    }
 </script>
 {% endblock %}

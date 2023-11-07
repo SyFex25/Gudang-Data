@@ -26,7 +26,8 @@ db.init_app(app)
 def display_chart():
     store_dimension = StoreDimension.query.all()
     product_dimension = ProductDimension.query.all()
-    return render_template('index.html', store_dimension=store_dimension, product_dimension=product_dimension)
+    promotion_dimension = PromotionDimension.query.all()
+    return render_template('index.html', store_dimension=store_dimension, product_dimension=product_dimension, promotion_dimension=promotion_dimension)
 
 @app.route('/fact-table')
 def display_fact_table():
@@ -66,27 +67,6 @@ def query_gross_profit():
 
     return "Done"
 
-# @app.route('/gross_margin')
-# def gross_margin():
-#     store_key = "2123"
-#     date_key = "2023-11-02"
-#     product_key = "1035453804963260181506960"
-
-#     query = RetailSalesFact.query.filter(
-#         RetailSalesFact.store_key == store_key,
-#         RetailSalesFact.date_key == date_key,
-#         RetailSalesFact.product_key == product_key
-#     )
-
-#     results = query.with_entities(RetailSalesFact.extended_sales_dollar_amount, RetailSalesFact.extended_cost_dollar_amount).all()
-
-#     total_sales = sum(result[0] for result in results)
-#     total_cost = sum(result[1] for result in results)
-    
-#     gross_margin = total_sales - total_cost
-
-#     return f"Gross Margin for Store {store_key}, Date {date_key}, Product {product_key}: ${gross_margin:.2f}"
-
 @app.route('/gross_margin_data')
 def gross_margin_data():
     product_key = request.args.get('product_key')
@@ -122,3 +102,64 @@ def gross_margin_data():
 
     return jsonify(data)
 
+@app.route('/gross_profit_data')
+def gross_profit_data():
+    product_key = request.args.get('product_key')
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+   
+    # Konversi tanggal dari format "YYYY-MM-DD" ke "YYYYMMDD" integer
+    start_date = int(start_date.replace("-", ""))
+    end_date = int(end_date.replace("-", ""))
+
+    # Query data margin sesuai dengan produk dan rentang tanggal
+    query = db.session.query(
+        StoreDimension.store_key,
+        (RetailSalesFact.extended_gross_profit_dollar_amount).label('total_profit')
+    ).join(StoreDimension, RetailSalesFact.store_key == StoreDimension.store_key).filter(
+        RetailSalesFact.product_key == product_key,
+        RetailSalesFact.date_key >= start_date,
+        RetailSalesFact.date_key <= end_date
+    ).group_by(StoreDimension.store_key)
+
+    results = query.all()
+    # Membuat daftar store_key dan margin
+    store_keys = [result[0] for result in results]
+    gross_profit_values = [(result[1]) for result in results]
+    print('Gross Profit', gross_profit_values)
+
+    data = {
+        "store_keys": store_keys,
+        "gross_profit_values": gross_profit_values
+    }
+
+    return jsonify(data)
+
+
+@app.route('/promotion_data')
+def promotion_data():
+    product_key = request.args.get('product_key')
+    promotion_name = request.args.get('promotion_name')
+ 
+    # Query data margin sesuai dengan produk dan rentang tanggal
+    query = db.session.query(
+        StoreDimension.store_key,
+        (RetailSalesFact.extended_gross_profit_dollar_amount).label('total_profit')
+    ).join(StoreDimension, RetailSalesFact.store_key == StoreDimension.store_key).filter(
+        RetailSalesFact.product_key == product_key,
+        RetailSalesFact.date_key >= start_date,
+        RetailSalesFact.date_key <= end_date
+    ).group_by(StoreDimension.store_key)
+
+    results = query.all()
+    # Membuat daftar store_key dan margin
+    store_keys = [result[0] for result in results]
+    gross_profit_values = [(result[1]) for result in results]
+    print('Gross Profit', gross_profit_values)
+
+    data = {
+        "store_keys": store_keys,
+        "gross_profit_values": gross_profit_values
+    }
+
+    return jsonify(data)
