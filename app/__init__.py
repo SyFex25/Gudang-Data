@@ -5,8 +5,9 @@ import os
 current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(current_dir)
 
-from flask import Flask
+from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
 from flask import Flask, request, render_template, redirect, url_for
 from models import db, DateDimension, ProductDimension, StoreDimension, CashierDimension, PromotionDimension, PaymentMethodDimension, TravellerShopperDimension, RetailSalesFact
 
@@ -14,7 +15,7 @@ app = Flask(__name__)
 from import_data import scheduler
 
 app.secret_key = 'Gudang_Data'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@127.0.0.1/testing_gd'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@127.0.0.1/gudang_data_test'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
@@ -84,4 +85,30 @@ def gross_margin():
     gross_margin = total_sales - total_cost
 
     return f"Gross Margin for Store {store_key}, Date {date_key}, Product {product_key}: ${gross_margin:.2f}"
+
+@app.route('/profit_chart')
+def profit_chart():
+    return render_template('profit_chart.html')
+
+@app.route('/get_profit_data/<product>/<date_start>/<date_end>')
+def get_profit_data(product,date_start,date_end):
+    # date_start = int(date_start)
+    # date_end = int(date_end)
+    _product = "274104755335728051792047766739960854317" "274104755335728051792047766739960854317"
+    _date_start = "20230101"
+    _date_end = "20230302"
+    print(_product == product,_date_start == date_start,_date_end==date_end)
+    print(type(product),type(date_start),type(date_end))
+    print(type(_product))
+    result = db.session.query(
+        RetailSalesFact.store_key,
+        func.sum(RetailSalesFact.extended_gross_profit_dollar_amount).label('total_profit')
+    ).filter(
+        RetailSalesFact.product_key == product,
+        RetailSalesFact.date_key.between(date_start, date_end)
+    ).group_by(RetailSalesFact.store_key).all()
+    print(result)
+
+    profit_data = [{'store_key': store_key, 'total_profit': total_profit} for store_key, total_profit in result]
+    return jsonify(profit_data)
 

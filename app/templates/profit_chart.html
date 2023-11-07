@@ -1,0 +1,138 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="inner m-5">
+	<h2 class="text-center pb-3 text-primary">Chart</h2>
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <div class="card h-100">
+              <div class="card-header">
+                <span class="me-2"><i class="bi bi-bar-chart-fill"></i></span>
+                Gross Profit
+              </div>
+              <div class="card-body">
+                <canvas id="grossProfitChart" width="400" height="200"></canvas>
+                <div class="filter d-flex">
+                  <div class="dropdown mt-3 me-2">
+                    <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      Store
+                    </button>
+                    <ul class="dropdown-menu">
+                      {% for store in store_dimension %}
+                      <li><a class="dropdown-item" href="/store_dimension/{{store.store_key}}">{{store.store_name}}</a></li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                  <div class="dropdown mt-3 me-2">
+                    <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      Product
+                    </button>
+                    <ul class="dropdown-menu">
+                      {% for product in product_dimension %}
+                      <li><a class="dropdown-item" href="/product_dimension/{{product.product_key}}">{{product.product_description}}</a></li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                  <div class="col mt-3 me-2" id="start-date">
+                    <input type="date" class="form-control">
+                  </div>
+                  <div class="col mt-3" id="end-date">
+                      <input type="date" class="form-control">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        <div class="col-md-6 mb-3">
+          <div class="card h-100">
+            <div class="card-header">
+              <span class="me-2"><i class="bi bi-bar-chart-fill"></i></span>
+              Gross Margin
+            </div>
+            <div class="card-body">
+              <canvas id="grossMarginChart" width="400" height="200"></canvas>
+              <!-- Dropdown filter -->
+              <div class="filter d-flex">
+                <div class="dropdown mt-3 me-2">
+                  <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Store
+                  </button>
+                  <ul class="dropdown-menu">
+                    {% for store in store_dimension %}
+                    <li><a class="dropdown-item" href="/store_dimension/{{store.store_key}}">{{store.store_name}}</a></li>
+                    {% endfor %}
+                  </ul>
+                </div>
+                <div class="dropdown mt-3 me-2">
+                  <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Product
+                  </button>
+                  <ul class="dropdown-menu">
+                    {% for product in product_dimension %}
+                    <li><a class="dropdown-item" href="/product_dimension/{{product.product_key}}">{{product.product_description}}</a></li>
+                    {% endfor %}
+                  </ul>
+                </div>
+                <div class="col mt-3 me-2" id="start-date">
+                  <input type="date" class="form-control">
+                </div>
+                <div class="col mt-3" id="end-date">
+                    <input type="date" class="form-control">
+                </div>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.0.2/dist/chart.min.js"></script>
+<script>
+  // Ini adalah contoh data yang harus diganti dengan data yang sesuai
+  // what data do i need? store and product for the query, i need period and profit 
+  // or maybe, store for the labels, the profit is summed up over a period so we can compare
+  // the profits between stores
+  // maybe i can make it a quarter, semester, or monthly thing 
+  // i'll go with the store thing for now. So i get all of the stores, query will be:
+  // profit, store, period, product
+  const dataGrossProfit = {
+    
+
+
+
+
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+    datasets: [{
+      label: 'Gross Profit',
+      data: [100, 200, 150, 250, 180],
+      backgroundColor: 'rgba(75, 192, 192, 0.2)',
+      borderColor: 'rgba(75, 192, 192, 1)',
+      borderWidth: 1
+    }]
+  };
+  
+  const dataGrossMargin = {
+    labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+    datasets: [{
+      label: 'Gross Margin',
+      data: [20, 25, 22, 30],
+      backgroundColor: 'rgba(255, 99, 132, 0.2)',
+      borderColor: 'rgba(255, 99, 132, 1)',
+      borderWidth: 1
+    }]
+  };
+  
+  // Inisialisasi grafik Gross Profit
+  const grossProfitChart = new Chart(document.getElementById('grossProfitChart'), {
+    type: 'bar',
+    data: dataGrossProfit
+  });
+  
+  // Inisialisasi grafik Gross Margin
+  const grossMarginChart = new Chart(document.getElementById('grossMarginChart'), {
+    type: 'bar',
+    data: dataGrossMargin
+  });
+  </script>
+  
+
+{% endblock %}
