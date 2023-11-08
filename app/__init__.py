@@ -52,10 +52,6 @@ def display_promotions():
     promotion_dimension = PromotionDimension.query.all()
     return render_template('promotions.html', promotion_dimension=promotion_dimension)
 
-@app.route('/payment-methods')
-def display_payment_methods():
-    return render_template('payment_methods.html')
-
 @app.route('/query_gross_profit')
 def query_gross_profit():
     results = RetailSalesFact.query.filter(
