@@ -112,7 +112,6 @@ def gross_profit_data():
     start_date = int(start_date.replace("-", ""))
     end_date = int(end_date.replace("-", ""))
 
-    # Query data margin sesuai dengan produk dan rentang tanggal
     query = db.session.query(
         StoreDimension.store_key,
         (RetailSalesFact.extended_gross_profit_dollar_amount).label('total_profit')
@@ -123,7 +122,7 @@ def gross_profit_data():
     ).group_by(StoreDimension.store_key)
 
     results = query.all()
-    # Membuat daftar store_key dan margin
+
     store_keys = [result[0] for result in results]
     gross_profit_values = [(result[1]) for result in results]
     print('Gross Profit', gross_profit_values)
@@ -150,7 +149,7 @@ def promotion_data():
     ).group_by(RetailSalesFact.store_key)
 
     results = query.all()
-    # Membuat daftar store_key dan margin
+
     store_keys = [result[0] for result in results]
     promotion_values = [(result[1]) for result in results]
     print("store", store_keys)
