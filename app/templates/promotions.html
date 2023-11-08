@@ -1,8 +1,9 @@
 {% extends "layout.html" %}
 {% block body %}
     <div class="inner m-5">
-        <h2 class="text-center pb-3 text-primary">Promotions</h2>
+        <h2 class="text-center pb-3 text-primary">Retail Facts Table</h2>
         <div class="overflow-x-auto">
+
             <table class="table table-bordered">
                 <thead>
                     <tr>
@@ -54,28 +55,26 @@
                                                             {% endif %}
                                                         {% endif %}
                                                     {% endfor %}
-                                                    
                                                     {% for product in sold_products|unique %}
                                                         <li>{{ product }}</li>
                                                     {% endfor %}
                                                 </ul>
                                             
-                                                <h6>Produk yang Tidak Laku Terjual</h6>
-                                                <ul>
-                                                    {% for product in unsold_products %}
-                                                        <li>{{ product }}</li>
-                                                    {% endfor %}
-                                                </ul>
-                                                
-                                            </form>
-                                                                                     
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                        </div>
+                                            <h6>Produk yang Tidak Laku Terjual</h6>
+                                            <ul>
+                                                {% for product in unsold_products|unique %}
+                                                <li>{{ product }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                            <div class="modal-footer">
+                                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            </div>
+                                        </form>
                                     </div>
+                                  </div>
                                 </div>
-                            </div>
+                              </div>
+                        </div>
                         {% endfor %}
                     {% else %}
                         <tr>
@@ -84,6 +83,7 @@
                     {% endif %}
                 </tbody>
             </table>
-        </div>
+
+
     </div>
 {% endblock %}
