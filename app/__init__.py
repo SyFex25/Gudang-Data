@@ -152,7 +152,6 @@ def promotion_data():
 
     store_keys = [result[0] for result in results]
     promotion_values = [(result[1]) for result in results]
-    print("store", store_keys)
 
     data = {
         "store_keys": store_keys,   
