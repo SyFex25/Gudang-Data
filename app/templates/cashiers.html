@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="inner m-5">
+    <h2 class="text-center pb-3 text-primary">Cashiers Table</h2>
+    <div class="container-fluid">
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Cashier Key</th>
+                <th scope="col">Cashier Employee ID</th>
+                <th scope="col">Cashier Name</th>
+            </tr>
+        </thead>
+        <tbody scope="row" id="data-table-body">
+            {% if cashier_dimension %}
+                {% for cashier in cashier_dimension %}
+                    <tr>
+                        <td>{{ cashier.cashier_key }}</td>
+                        <td>{{ cashier.cashier_employee_id }}</td>
+                        <td>{{ cashier.cashier_name }}</td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="3">Tabel kosong</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
