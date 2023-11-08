@@ -140,26 +140,24 @@ def gross_profit_data():
 def promotion_data():
     product_key = request.args.get('product_key')
     promotion_name = request.args.get('promotion_name')
- 
+
     # Query data margin sesuai dengan produk dan rentang tanggal
     query = db.session.query(
-        StoreDimension.store_key,
+        RetailSalesFact.store_key,
         (RetailSalesFact.extended_gross_profit_dollar_amount).label('total_profit')
-    ).join(StoreDimension, RetailSalesFact.store_key == StoreDimension.store_key).filter(
-        RetailSalesFact.product_key == product_key,
-        RetailSalesFact.date_key >= start_date,
-        RetailSalesFact.date_key <= end_date
-    ).group_by(StoreDimension.store_key)
+    ).join(PromotionDimension, RetailSalesFact.promotion_key == PromotionDimension.promotion_key).filter(
+        RetailSalesFact.product_key == product_key, PromotionDimension.promotion_name == promotion_name
+    ).group_by(RetailSalesFact.store_key)
 
     results = query.all()
     # Membuat daftar store_key dan margin
     store_keys = [result[0] for result in results]
-    gross_profit_values = [(result[1]) for result in results]
-    print('Gross Profit', gross_profit_values)
+    promotion_values = [(result[1]) for result in results]
+    print("store", store_keys)
 
     data = {
-        "store_keys": store_keys,
-        "gross_profit_values": gross_profit_values
+        "store_keys": store_keys,   
+        "promotion_values": promotion_values
     }
 
     return jsonify(data)
