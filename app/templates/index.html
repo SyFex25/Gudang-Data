@@ -110,7 +110,6 @@
     let selectedProductKeyP = null;
     let selectedProductDescription = null;
 
-    // Function to select a product
     function selectProduct(productKey, productDescription, type) {
         if (type ==="profit"){
           selectedProductKeyP = productKey;
@@ -138,10 +137,6 @@
 
         }
        
-    
-
-
-    // Inisialisasi grafik Gross Margin
     const grossMarginChart = new Chart(document.getElementById('grossMarginChart'), {
         type: 'bar',
         data: {
@@ -173,23 +168,18 @@
         }
     });
 
-    // Function to update the Gross Margin chart with data from /gross_margin_data
     function updateGrossMarginChart() {
-      
-        // Get the selected start date and end date
         const startDate = document.getElementById("startDateM").value;
         const endDate = document.getElementById("endDateM").value;
 
         if (selectedProductKeyM && startDate && endDate) {
-            // Send an AJAX request to fetch data from /gross_margin_data
             fetch(`/gross_margin_data?product_key=${selectedProductKeyM}&start_date=${startDate}&end_date=${endDate}`)
                 .then(response => response.json())
                 .then(data => {
-                    const storeKeys = data.store_keys;  // Menggunakan store_keys
+                    const storeKeys = data.store_keys;
                     const grossMarginValues = data.gross_margin_values;
 
-                    // Update the Gross Margin chart with the new data
-                    grossMarginChart.data.labels = storeKeys;  // Menggunakan storeKeys
+                    grossMarginChart.data.labels = storeKeys;
                     grossMarginChart.data.datasets[0].data = grossMarginValues;
                     grossMarginChart.update();
                 });
@@ -198,7 +188,6 @@
         }
     }
 
-    // Inisialisasi grafik Gross Profit
     const grossProfitChart = new Chart(document.getElementById('grossProfitChart'), {
         type: 'bar',
         data: {
@@ -230,23 +219,18 @@
         }
     });
 
-
-     // Function to update the Gross Profit chart with data from /gross_profit_data
      function updateGrossProfitChart() {
-        // Get the selected start date and end date
         const startDate = document.getElementById("startDate").value;
         const endDate = document.getElementById("endDate").value;
 
         if (selectedProductKeyP && startDate && endDate) {
-            // Send an AJAX request to fetch data from /gross_margin_data
             fetch(`/gross_profit_data?product_key=${selectedProductKeyP}&start_date=${startDate}&end_date=${endDate}`)
                 .then(response => response.json())
                 .then(data => {
-                    const storeKeys = data.store_keys;  // Menggunakan store_keys
+                    const storeKeys = data.store_keys;
                     const grossProfitValues = data.gross_profit_values;
                     
-                    // Update the Gross Profit chart with the new data
-                    grossProfitChart.data.labels = storeKeys;  // Menggunakan storeKeys
+                    grossProfitChart.data.labels = storeKeys;
                     grossProfitChart.data.datasets[0].data = grossProfitValues;
                     grossProfitChart.update();
                 });
@@ -255,7 +239,6 @@
         }
     }
 
-    // Inisialisasi grafik Gross Margin
     const PromotionChart = new Chart(document.getElementById('Promotion'), {
         type: 'bar',
         data: {
@@ -291,16 +274,15 @@
     function updatePromotionChart() {
         const promotion_name = document.querySelector('#promotion_button2').innerHTML;
         if (selectedProductKeyPro && promotion_name) {
-            // Send an AJAX request to fetch data from /gross_margin_data
             fetch(`/promotion_data?product_key=${selectedProductKeyPro}&promotion_name=${promotion_name}`)
                 .then(response => response.json())
                 .then(data => {
-                    const storeKeys = data.store_keys;  // Menggunakan store_keys
+                    const storeKeys = data.store_keys;
                     const promotion_values = data.promotion_values;
                     console.log("promotion values = ", promotion_values)
                     console.log("Works", storeKeys)
-                    // Update the Gross Profit chart with the new data
-                    PromotionChart.data.labels = storeKeys;  // Menggunakan storeKeys
+        
+                    PromotionChart.data.labels = storeKeys;
                     PromotionChart.data.datasets[0].data = promotion_values;
                     PromotionChart.update();
                 });
