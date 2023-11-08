@@ -28,6 +28,14 @@ def display_chart():
     promotion_dimension = PromotionDimension.query.all()
     return render_template('index.html', store_dimension=store_dimension, product_dimension=product_dimension, promotion_dimension=promotion_dimension)
 
+@app.route('/create_all_tables')
+def create_date_dimension_table():
+    try:
+        db.create_all()
+        return "Tabel database sudah dibuat."
+    except Exception as e:
+        return f"Error: {e}"
+
 @app.route('/fact-table')
 def display_fact_table():
     retail_sales_facts = RetailSalesFact.query.all()
