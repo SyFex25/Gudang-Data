@@ -49,7 +49,8 @@ def display_products():
 
 @app.route('/promotions')
 def display_promotions():
-    return render_template('promotions.html')
+    promotion_dimension = PromotionDimension.query.all()
+    return render_template('promotions.html', promotion_dimension=promotion_dimension)
 
 @app.route('/payment-methods')
 def display_payment_methods():
