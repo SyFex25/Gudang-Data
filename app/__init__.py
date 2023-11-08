@@ -49,7 +49,8 @@ def display_products():
 
 @app.route('/promotions')
 def display_promotions():
-    return render_template('promotions.html')
+    promotion_dimension = PromotionDimension.query.all()
+    return render_template('promotions.html', promotion_dimension=promotion_dimension)
 
 @app.route('/payment-methods')
 def display_payment_methods():
@@ -152,7 +153,6 @@ def promotion_data():
 
     store_keys = [result[0] for result in results]
     promotion_values = [(result[1]) for result in results]
-    print("store", store_keys)
 
     data = {
         "store_keys": store_keys,   

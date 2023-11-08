@@ -1,3 +1,65 @@
 {% extends "layout.html" %}
 {% block body %}
+    <div class="inner m-5">
+        <h2 class="text-center pb-3 text-primary">Retail Facts Table</h2>
+        <div class="overflow-x-auto">
+
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col">No</th>
+                        <th scope="col">Promotion Key</th>
+                        <th scope="col">Promotion Code</th>
+                        <th scope="col">Promotion Name</th>
+                        <th scope="col">Promotion Media Type</th>
+                        <th scope="col">Promotion Begin Date</th>
+                        <th scope="col">Discount End Date</th>
+                        <th scope="col">Details</th>
+                    </tr>
+                </thead>
+                <tbody scope="row" id="data-table-body">
+                    {% if promotion_dimension %}
+                        {% for promo in promotion_dimension %}
+                            <tr>
+                                <th scope="row">{{ loop.index }}</th>
+                                <td>{{ promo.promotion_key }}</td>
+                                <td>{{ promo.promotion_code }}</td>
+                                <td>{{ promo.promotion_name }}</td>
+                                <td>{{ promo.promotion_media_type }}</td>
+                                <td>{{ promo.promotion_begin_date }}</td>
+                                <td>{{ promo.promotion_end_date }}</td>
+                                <td><button class="btn btn-warning fw-bold" data-bs-toggle="modal" data-bs-target="#promo{{promo.promotion_key}}detailModal" type="button" style="height: 40px;">Details</button></td>
+                            </tr>
+                            <div class="modal fade" id="promo{{promo.promotion_key}}detailModal" tabindex="-1" aria-labelledby="promo{{promo.promotion_key}}detailModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <h1 class="modal-title fs-5" id="promo{{promo.promotion_key}}detailModalLabel">Detail Promo {{ promo.promotion_name }}</h1>
+                                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form>
+                                            <h6>Produk yang Laku Terjual</h6>
+                                            
+                                            <h6>Produk yang Tidak Laku Terjual</h6>
+                                            <div class="modal-footer">
+                                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="15">Tabel kosong</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+
+
+    </div>
 {% endblock %}

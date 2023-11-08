@@ -21,7 +21,10 @@ class ProductDimension(db.Model):
     product_description = db.Column(db.String(255))
     brand_description = db.Column(db.String(255))
     category_description = db.Column(db.String(255))
-    cost = db.Column(db.Integer())
+    price = db.Column(db.Float)
+    cost = db.Column(db.Float)
+    def __repr__(self):
+        return f'<ProductDimension product_key={self.product_key}>'
 
 class StoreDimension(db.Model):
     __tablename__ = 'store_dimension'
