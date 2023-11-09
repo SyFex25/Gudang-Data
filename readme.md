@@ -1,1 +1,1 @@
-Fred an Beth
+This is a Data Warehouse example

@@ -1,10 +1,18 @@
 {% extends "layout.html" %}
 {% block body %}
+<script>
+    function refreshPage() {
+        location.reload(); 
+    }
+
+    setInterval(refreshPage, 30000);
+</script>
+
 <div class="inner m-5">
     <h2 class="text-center pb-3 text-primary">Retail Facts Table</h2>
     <div class="overflow-x-auto">
 
-        <table class="table table-bordered">
+        <table class="table table-bordered" id="retailTable">
             <thead>
                 <tr>
                     <th scope="col">No</th>
@@ -55,6 +63,6 @@
             </tbody>
         </table>
     </div>
-
 </div>
+
 {% endblock %}
