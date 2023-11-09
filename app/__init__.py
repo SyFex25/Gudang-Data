@@ -66,7 +66,7 @@ def gross_margin_data():
     # Membuat daftar store_key dan margin
     store_keys = [result[0] for result in results]
     gross_margin_values = [(result[1] / result[2] * 100) if result[2] else 0 for result in results]
-    print('gross margin', gross_margin_values)
+
 
     data = {
         "store_keys": store_keys,
