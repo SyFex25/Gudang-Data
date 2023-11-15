@@ -15,7 +15,7 @@ from models import *
 
 app = Flask(__name__)
 
-from import_data import scheduler
+from import_rsf import scheduler
 
 app.secret_key = 'Gudang_Data'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@127.0.0.1/gudang_data_testing_revised'

@@ -67,7 +67,7 @@ class TravellerShopperDimension(db.Model):
 
 class RetailSalesFact(db.Model):
     __tablename__ = 'retail_sales_facts'
-    retail_id = db.Column(db.Integer, primary_key=True)
+    retail_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     date_key = db.Column(db.Integer, db.ForeignKey('date_dimension.date_key'))
     product_key = db.Column(db.String(5), db.ForeignKey('product_dimension.product_key'))
     store_key = db.Column(db.String(5), db.ForeignKey('store_dimension.store_key'))
