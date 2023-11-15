@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 14, 2023 at 09:01 AM
+-- Generation Time: Nov 15, 2023 at 04:41 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -498,20 +498,21 @@ CREATE TABLE `promotion_dimension` (
   `promotion_name` varchar(25) DEFAULT NULL,
   `promotion_media_type` varchar(25) DEFAULT NULL,
   `promotion_begin_date` date DEFAULT NULL,
-  `promotion_end_date` date DEFAULT NULL
+  `promotion_end_date` date DEFAULT NULL,
+  `promotion_percentage` float DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `promotion_dimension`
 --
 
-INSERT INTO `promotion_dimension` (`promotion_key`, `promotion_code`, `promotion_name`, `promotion_media_type`, `promotion_begin_date`, `promotion_end_date`) VALUES
-('12719', 'Pe66dc5c1-5ea2-4726-ad97-', 'Tahun Baru', 'Online', '2023-01-01', '2023-01-08'),
-('12936', 'Pecd4973b-b72b-4cc4-966d-', 'Valentine', 'Online', '2023-02-13', '2023-02-14'),
-('28971', 'P4edf06e5-1d6d-427b-b36a-', 'No Promotion', 'Offline', '2023-01-01', '2023-12-31'),
-('33121', 'P9609c413-d9bd-4f93-b355-', 'Hari Kemerdekaan', 'Offline', '2023-08-14', '2023-08-20'),
-('38737', 'P528f85f1-2940-4152-bba0-', 'Halloween', 'Online', '2023-10-24', '2023-10-31'),
-('80140', 'Pf9b7633c-cf1a-4cdc-8313-', 'Hari Buruh', 'Offline', '2023-05-01', '2023-05-08');
+INSERT INTO `promotion_dimension` (`promotion_key`, `promotion_code`, `promotion_name`, `promotion_media_type`, `promotion_begin_date`, `promotion_end_date`, `promotion_percentage`) VALUES
+('12719', 'Pe66dc5c1-5ea2-4726-ad97-', 'Tahun Baru', 'Online', '2023-01-01', '2023-01-08', 10),
+('12936', 'Pecd4973b-b72b-4cc4-966d-', 'Valentine', 'Online', '2023-02-13', '2023-02-14', 15),
+('28971', 'P4edf06e5-1d6d-427b-b36a-', 'No Promotion', 'Offline', '2023-01-01', '2023-12-31', 0),
+('33121', 'P9609c413-d9bd-4f93-b355-', 'Hari Kemerdekaan', 'Offline', '2023-08-14', '2023-08-20', 20),
+('38737', 'P528f85f1-2940-4152-bba0-', 'Halloween', 'Online', '2023-10-24', '2023-10-31', 25),
+('80140', 'Pf9b7633c-cf1a-4cdc-8313-', 'Hari Buruh', 'Offline', '2023-05-01', '2023-05-08', 18);
 
 -- --------------------------------------------------------
 
