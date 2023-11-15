@@ -53,25 +53,53 @@ def display_fact_table():
 @app.route('/promotions')
 def display_promotions():
     promotion_dimension = PromotionDimension.query.all()
-    product_dimension = ProductDimension.query.all()
-    retail_sales_facts = RetailSalesFact.query.all()
-
     products_info = {}
-    for promo in promotion_dimension:
-        sold_products = set()
-        unsold_products = set(product.product_description for product in product_dimension)
 
-        for sale in retail_sales_facts:
-            if sale.promotion_key == promo.promotion_key:
-                sold_products.add(next((product.product_description for product in product_dimension if product.product_key == sale.product_key), None))
-                unsold_products.discard(next((product.product_description for product in product_dimension if product.product_key == sale.product_key), None))
+    for promo in promotion_dimension:
+        sold_products_query = db.session.query(
+            ProductDimension.product_description,
+            func.sum(RetailSalesFact.sales_quantity).label('total_sales')
+        ).join(RetailSalesFact, RetailSalesFact.product_key == ProductDimension.product_key) \
+            .filter(RetailSalesFact.promotion_key == promo.promotion_key) \
+            .group_by(ProductDimension.product_description).all()
+
+        sold_products = {product.product_description: product.total_sales or 0 for product in sold_products_query}
+
+        unsold_products_query = db.session.query(
+            ProductDimension.product_description,
+            func.sum(RetailSalesFact.sales_quantity).label('total_sales')
+        ).outerjoin(RetailSalesFact, (RetailSalesFact.product_key == ProductDimension.product_key) & (RetailSalesFact.promotion_key == promo.promotion_key)) \
+            .filter(RetailSalesFact.retail_id.is_(None)) \
+            .group_by(ProductDimension.product_description).all()
+
+        unsold_products = {product.product_description: product.total_sales or 0 for product in unsold_products_query}
+
+        sold = {}
+        unsold = {}
+
+        for product_desc, total_sales in sold_products.items():
+            transaction_count = db.session.query(func.count(RetailSalesFact.product_key)) \
+                .filter(RetailSalesFact.promotion_key == promo.promotion_key) \
+                .filter(RetailSalesFact.product_key == ProductDimension.product_key) \
+                .filter(ProductDimension.product_description == product_desc) \
+                .scalar()
+
+            if total_sales >= 5 and transaction_count >= 2:
+                sold[product_desc] = (total_sales, transaction_count)
+            else:
+                unsold[product_desc] = (total_sales, transaction_count)
+
+        for product_desc, total_sales in unsold_products.items():
+            if product_desc not in sold and total_sales <= 5:
+                unsold[product_desc] = (total_sales, 0)
 
         products_info[promo.promotion_key] = {
-            'sold': list(sold_products),
-            'unsold': list(unsold_products)
+            'sold': [f"{product_desc} ({total_sales[0]} item, {total_sales[1]} Transaction)" for product_desc, total_sales in sold.items()],
+            'unsold': [f"{product_desc} ({total_sales[0]} item, {total_sales[1]} Transaction)" for product_desc, total_sales in unsold.items()]
         }
 
     return render_template('promotions.html', products_info=products_info, promotion_dimension=promotion_dimension)
+
 
 @app.route('/insert_date_data')
 def insert_date_data():
