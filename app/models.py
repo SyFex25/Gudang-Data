@@ -50,6 +50,7 @@ class PromotionDimension(db.Model):
     promotion_media_type = db.Column(db.String(25))
     promotion_begin_date = db.Column(db.Date)
     promotion_end_date = db.Column(db.Date)
+    promotion_percentage = db.Column(db.Float)
     def __repr__(self):
         return f'<PromotionDimension promotion_key={self.promotion_key}>'
 

@@ -142,7 +142,6 @@ def gross_margin_data():
 
     results = query.all()
 
-    # Membuat daftar store_key dan margin
     store_keys = [result[0] for result in results]
     gross_margin_values = [(result[1] / result[2] * 100) if result[2] else 0 for result in results]
 
