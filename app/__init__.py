@@ -43,13 +43,35 @@ def display_fact_table():
     retail_sales_facts = RetailSalesFact.query.all()
     return render_template('fact_table.html', retail_sales_facts = retail_sales_facts)
 
+# @app.route('/promotions')
+# def display_promotions():
+#     promotion_dimension = PromotionDimension.query.all()
+#     retail_sales_facts = RetailSalesFact.query.all()
+#     product_dimension = ProductDimension.query.all()
+#     return render_template('promotions.html', promotion_dimension=promotion_dimension, retail_sales_facts=retail_sales_facts, product_dimension=product_dimension)
+
 @app.route('/promotions')
 def display_promotions():
     promotion_dimension = PromotionDimension.query.all()
-    retail_sales_facts = RetailSalesFact.query.all()
     product_dimension = ProductDimension.query.all()
-    return render_template('promotions.html', promotion_dimension=promotion_dimension, retail_sales_facts=retail_sales_facts, product_dimension=product_dimension)
+    retail_sales_facts = RetailSalesFact.query.all()
 
+    products_info = {}
+    for promo in promotion_dimension:
+        sold_products = set()
+        unsold_products = set(product.product_description for product in product_dimension)
+
+        for sale in retail_sales_facts:
+            if sale.promotion_key == promo.promotion_key:
+                sold_products.add(next((product.product_description for product in product_dimension if product.product_key == sale.product_key), None))
+                unsold_products.discard(next((product.product_description for product in product_dimension if product.product_key == sale.product_key), None))
+
+        products_info[promo.promotion_key] = {
+            'sold': list(sold_products),
+            'unsold': list(unsold_products)
+        }
+
+    return render_template('promotions.html', products_info=products_info, promotion_dimension=promotion_dimension)
 
 @app.route('/insert_date_data')
 def insert_date_data():
@@ -200,6 +222,7 @@ def promotion_data():
     ).group_by(RetailSalesFact.store_key)
 
     results = query.all()
+    print(results)
 
     store_keys = [result[0] for result in results]
     promotion_values = [(result[1]) for result in results]
