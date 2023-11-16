@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 15, 2023 at 04:41 AM
+-- Generation Time: Nov 16, 2023 at 01:35 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `gudang_data_testing_revised`
+-- Database: `database_toko`
 --
 
 -- --------------------------------------------------------
@@ -648,12 +648,6 @@ ALTER TABLE `traveller_shopper_dimension`
 --
 -- AUTO_INCREMENT for dumped tables
 --
-
---
--- AUTO_INCREMENT for table `date_dimension`
---
-ALTER TABLE `date_dimension`
-  MODIFY `date_key` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20231232;
 
 --
 -- AUTO_INCREMENT for table `retail_sales_facts`
