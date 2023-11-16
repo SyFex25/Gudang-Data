@@ -12,13 +12,14 @@ from flask import Flask, request, render_template, jsonify
 from sqlalchemy import func
 from datetime import date, timedelta
 from models import *
+from sqlalchemy import desc
 
 app = Flask(__name__)
 
 from import_rsf import scheduler
 
 app.secret_key = 'Gudang_Data'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@127.0.0.1/gudang_data_testing_revised'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@127.0.0.1/database_toko'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
@@ -40,8 +41,8 @@ def create_date_dimension_table():
 
 @app.route('/fact-table')
 def display_fact_table():
-    retail_sales_facts = RetailSalesFact.query.all()
-    return render_template('fact_table.html', retail_sales_facts = retail_sales_facts)
+    retail_sales_facts = RetailSalesFact.query.order_by(desc(RetailSalesFact.retail_id)).all()
+    return render_template('fact_table.html', retail_sales_facts=retail_sales_facts)
 
 # @app.route('/promotions')
 # def display_promotions():
