@@ -7,7 +7,7 @@ def connect_to_database():
             host="localhost",
             user="root",
             password="",
-            database="gudang_data",
+            database="gudang_data_revised",
             autocommit=True
         )
         return mydb
@@ -76,30 +76,35 @@ if __name__ == '__main__':
 
 
 
-    # Insert Retail Sales Fact
-    for i in range(10):
+    # Insert Retail Sales Fact 
+    for i in range(15):
         bought_product = choice(product)
-        promo = [("127197534513120974369078029708692804441",20230101),("1293676579042382297136886",20230214),
-                 ("33121890113396337783002224795346342625",20230814),("38737260967774587366681226162111705657",20231031),
-                 ("8014075331218306379158866005218795500",20230501)]
-        promo_chosen = choice(promo)
-        # date_key = choice(date)[0]
-        date_key = promo_chosen[1]
+
+        # pilih promo
+        # promo = [("12719",20230101),("12936",20230214)]
+        #         #  ("33121890113396337783002224795346342625",20230814),("38737260967774587366681226162111705657",20231031),
+        #         #  ("8014075331218306379158866005218795500",20230501)]
+        # promo_chosen = choice(promo)
+
+        date_key = choice(date)[0]
+        # date_key = promo_chosen[1]
         product_key = bought_product[0]
+        # product_key = "10354"
         store_key = choice(store)[0]
-        # promotion_key = "289711530917647764799594682974954383244"
-        promotion_key = promo_chosen[0]
+        promotion_key = "28971"
+        # promotion_key = promo_chosen[0]
         cashier_key = choice(cashier)[0]
         payment_method_key = choice(payment_method)[0]
         pos_transaction = "offline"
         sales_quantity = randint(1,10)
         regular_unit_price = bought_product[-2]
-        discount_unit_price = randrange(100,0.1*regular_unit_price)
+        # discount_unit_price = randrange(100,0.1*regular_unit_price)
+        discount_unit_price = 0 
+        net_unit_price = regular_unit_price - discount_unit_price
         extended_discount_dollar_amount = discount_unit_price * sales_quantity
-        extended_sales_dollar_amount = sales_quantity * regular_unit_price
+        extended_sales_dollar_amount = sales_quantity * net_unit_price
         extended_cost_dollar_amount = sales_quantity * bought_product[-1]
-        net_unit_price = extended_sales_dollar_amount - extended_discount_dollar_amount
-        extended_gross_profit_dollar_amount = net_unit_price - extended_cost_dollar_amount
+        extended_gross_profit_dollar_amount = extended_sales_dollar_amount - extended_cost_dollar_amount
             
         mydb = connect_to_database()
         mycursor = mydb.cursor()

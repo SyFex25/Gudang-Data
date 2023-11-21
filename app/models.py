@@ -1,4 +1,3 @@
-#semua model database yang sudah kita buat
 from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
