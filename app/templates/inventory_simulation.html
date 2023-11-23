@@ -1,0 +1,159 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="inner m-5">
+    <h2 class="text-center pb-3 text-primary">Inventory Simulation</h2>
+    <div class="container-sm bg-light rounded p-3 text-center" style="min-height: 300px;">
+        <div class="content pt-5" id="page1">
+            <h4>Initial</h4>
+            <p>Enter Product Details</p>
+            <div class="d-flex justify-content-center">
+                <button class="btn btn-dark dropdown-toggle me-2" id="profit_button"type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Product
+                </button>
+                <ul class="dropdown-menu">
+                    {% for product in product_dimension %}
+                    <li><a class="dropdown-item" href="#" onclick="selectProduct('{{ product.product_key }}', '{{ product.product_description }}', 'profit')">{{ product.product_description }}</a></li>
+                    {% endfor %}
+                </ul>
+
+                <button class="btn btn-dark dropdown-toggle me-2" id="profit_button"type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Warehouse
+                </button>
+                <ul class="dropdown-menu">
+                    <!-- Nanti ini connect ke database warehouse -->
+                </ul>
+
+                <button class="btn btn-dark dropdown-toggle" id="profit_button"type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Vendor
+                </button>
+                <ul class="dropdown-menu">
+                    <!-- Nanti ini connect ke database Vendor -->
+                </ul>
+            </div>
+            <div class="d-flex justify-content-center">
+                <input class="form-control my-4" type="number" placeholder="Sent Qtys" style="width: 300px;">
+            </div>
+            <button class="btn btn-primary mt-3" onclick="showNextPage(this)">Next</button>
+        </div>
+
+        <div class="content pt-5" id="page2" style="display: none;">
+            <h4>Goods Received</h4>
+            <p>Select Date and Received Quantities</p>
+            <div class="d-flex justify-content-center">
+                <div class="me-2" id="received-date">
+                    <input type="date" class="form-control" id="receivedDate" style="width: 300px;">
+                </div>
+                <input class="form-control" type="number" placeholder="Received Qtys" style="width: 300px;">
+
+            </div>
+            <button class="btn btn-primary mt-3" onclick="showPrevPage()">Back</button>
+            <button class="btn btn-primary mt-3" onclick="showNextPage(this)">Next</button>
+        </div>     
+
+        <div class="content pt-5" id="page3" style="display: none;">
+            <h4>Goods Inspected</h4>
+            <p>Select Date and Inspected Quantities</p>
+            <div class="d-flex justify-content-center">
+                <div class="me-2" id="inspected-date">
+                    <input type="date" class="form-control" id="inspectedDate" style="width: 300px;">
+                </div>
+                <input class="form-control" type="number" placeholder="Inspected Qtys" style="width: 300px;">
+
+            </div>
+            <button class="btn btn-primary mt-3" onclick="showPrevPage()">Back</button>
+            <button class="btn btn-primary mt-3" onclick="showNextPage(this)">Next</button>
+        </div>     
+
+        <div class="content pt-5" id="page4" style="display: none;">
+            <h4>Inspection Result</h4>
+            <p>Initial inspection findings</p>
+            <div class="d-flex justify-content-center">
+                <input class="form-control me-2" type="number" placeholder="Returned to Vendor Qtys" style="width: 300px;">
+                <input class="form-control me-2" type="number" placeholder="Damaged Qtys" style="width: 300px;">
+                <input class="form-control" type="number" placeholder="Placed in Bin Qtys" style="width: 300px;">
+            </div>
+            <button class="btn btn-primary mt-3" onclick="showPrevPage()">Back</button>
+            <button class="btn btn-primary mt-3" onclick="showNextPage(this)">Next</button>
+        </div>   
+
+        <div class="content pt-5" id="page5" style="display: none;">
+            <h4>Goods Shipment</h4>
+            <p>Initial inspection findings</p>
+            <div class="d-flex justify-content-center">
+                <div class="me-2" id="initial-shipment-date">
+                    <label for="initialShipmentDate">Date Initial Shipment:</label>
+                    <input type="date" class="form-control" id="initialShipmentDate" style="width: 300px;">
+                </div>
+                
+                <div class="me-2" id="last-shipment-date">
+                    <label for="lastShipmentDate">Date Last Shipment:</label>
+                    <input type="date" class="form-control" id="lastShipmentDate" style="width: 300px;">
+                </div>                
+            </div>
+            <button class="btn btn-primary mt-3" onclick="showPrevPage()">Back</button>
+            <button class="btn btn-primary mt-3" onclick="showNextPage(this)">Next</button>
+        </div> 
+        
+        <div class="content pt-5" id="page6" style="display: none;">
+            <h4>Shipment Result</h4>
+            <div class="d-flex justify-content-center">
+                <input class="form-control me-2" type="number" placeholder="Shipped to Cust Qtys" style="width: 200px;">
+                <input class="form-control me-2" type="number" placeholder="Returned by Cust Qtys" style="width: 200px;">
+                <input class="form-control me-2" type="number" placeholder="Returned to Inventory Qtys" style="width: 200px;">
+                <input class="form-control" type="number" placeholder="Damaged Qtys" style="width: 200px;">
+            </div>
+            <button class="btn btn-primary mt-3" onclick="showPrevPage()">Back</button>
+            <button class="btn btn-primary mt-3" onclick="showNextPage(this)">Next</button>
+        </div>  
+
+        <div class="content pt-5" id="page7" style="display: none;">
+            <h4>Shipment Result</h4>
+            <p>(Coming Soon) Nanti ini nampilin lagnya tiap suatu tasks dll</p>
+            <button class="btn btn-success mt-3 rounded-pill" onclick="save()">Save</button>
+        </div>  
+    </div>
+</div>
+
+<script>
+    let currentPage = 1;
+    const pages = document.querySelectorAll('.content');
+    const prevButton = document.getElementById('prevButton');
+    const nextButton = document.getElementById('nextButton');
+
+    function showNextPage() {
+        currentPage++;
+        if (currentPage > pages.length) {
+            currentPage = pages.length;
+        } else {
+            showHidePages();
+        }
+        checkButtonVisibility();
+    }
+
+    function showPrevPage() {
+        currentPage--;
+        if (currentPage < 1) {
+            currentPage = 1;
+        } else {
+            showHidePages();
+        }
+        checkButtonVisibility();
+    }
+
+    function showHidePages() {
+        for (let i = 0; i < pages.length; i++) {
+            if (i + 1 === currentPage) {
+                pages[i].style.display = 'block';
+            } else {
+                pages[i].style.display = 'none';
+            }
+        }
+    }
+
+    function checkButtonVisibility() {
+        prevButton.style.display = currentPage === 1 ? 'none' : 'block';
+        nextButton.style.display = currentPage === pages.length ? 'none' : 'block';
+    }
+</script>
+
+{% endblock %}
