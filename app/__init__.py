@@ -16,10 +16,10 @@ from sqlalchemy import desc
 
 app = Flask(__name__)
 
-from import_rsf import scheduler
+# from import_rsf import scheduler
 
 app.secret_key = 'Gudang_Data'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@127.0.0.1/database_toko'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@127.0.0.1/toko'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
@@ -236,6 +236,26 @@ def gross_profit_data():
 
     return jsonify(data)
 
+@app.route('/snapshot')
+def snapshot_simulation():
+    retail_inventory_snapshot_facts = RetailInventorySnapshotFacts.query.all()
+    historic_retail_inventory_snapshot_fact = HistoricRetailInventorySnapshotFact.query.all()
+    return render_template('snapshot.html', retail_inventory_snapshot_facts = retail_inventory_snapshot_facts, historic_retail_inventory_snapshot_fact = historic_retail_inventory_snapshot_fact)
+
+@app.route('/inventory')
+def inventory_simulation():
+    inventory_receipt_accumulating_fact = InventoryReceiptAccumulatingFact.query.all()
+    return render_template('inventory.html', inventory_receipt_accumulating_fact = inventory_receipt_accumulating_fact)
+
+@app.route('/snapshot-historic')
+def display_snapshot_historic():
+    historic_retail_inventory_snapshot_fact = HistoricRetailInventorySnapshotFact.query.all()
+    return render_template('snapshot_historic.html', historic_retail_inventory_snapshot_fact = historic_retail_inventory_snapshot_fact)
+
+@app.route('/inventory-simulation')
+def display_inventory_simulation():
+    return render_template('inventory_simulation.html')
+
 
 @app.route('/promotion_data')
 def promotion_data():
@@ -274,3 +294,4 @@ def generate_unique_key():
 def get_holiday_dates():
     holiday_dates = ['2023-01-01', '2023-03-25', '2023-12-25', '2023-07-04', '2023-19-04', '2023-04-20', '2023-04-21', '2023-04-22', '2023-04-23', '2023-04-24', '2023-04-25']
     return holiday_dates
+
