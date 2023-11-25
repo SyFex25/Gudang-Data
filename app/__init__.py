@@ -10,9 +10,12 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, request, render_template, jsonify
 from sqlalchemy import func
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from models import *
 from sqlalchemy import desc
+from flask import jsonify
+from collections import defaultdict
+import uuid
 
 app = Flask(__name__)
 
@@ -240,7 +243,65 @@ def gross_profit_data():
 def snapshot_simulation():
     retail_inventory_snapshot_facts = RetailInventorySnapshotFacts.query.all()
     historic_retail_inventory_snapshot_fact = HistoricRetailInventorySnapshotFact.query.all()
-    return render_template('snapshot.html', retail_inventory_snapshot_facts = retail_inventory_snapshot_facts, historic_retail_inventory_snapshot_fact = historic_retail_inventory_snapshot_fact)
+    return render_template('snapshot.html', retail_inventory_snapshot_facts=retail_inventory_snapshot_facts, historic_retail_inventory_snapshot_fact=historic_retail_inventory_snapshot_fact)
+
+@app.route('/move_snapshot', methods=['POST'])
+def move_snapshot():
+    if request.method == 'POST':
+        # Get current date
+        current_date = datetime.now().date()
+
+        # Get all rows from RetailInventorySnapshotFacts
+        retail_snapshots = RetailInventorySnapshotFacts.query.all()
+        # Get distinct store keys from RetailInventorySnapshotFacts
+        distinct_store_keys = db.session.query(RetailInventorySnapshotFacts.store_key).distinct().all()
+        unique_store_keys = [key[0] for key in distinct_store_keys]
+        # Create a session
+        session = db.session
+
+        # Iterate through each snapshot
+        for snapshot in retail_snapshots:
+            # Get date from DateDimension based on date_key
+            date_dimension_entry = DateDimension.query.filter_by(date_key=snapshot.date_key).first()
+
+            if date_dimension_entry:
+                # Calculate the difference in days between current date and the snapshot's date
+                date_difference = (current_date - date_dimension_entry.date).days
+
+                # Check if the snapshot's date is older than 30 days from the current date
+                if date_difference > 1:
+                    # Check if the product_key exists in ProductDimension
+                    product_dimension_entry = ProductDimension.query.filter_by(product_key=snapshot.product_key).first()
+                    
+                    if product_dimension_entry:
+                        # Calculate average quantity_on_hand for a certain product on a certain day across stores
+                        avg_quantity_on_hand = db.session.query(func.sum(RetailInventorySnapshotFacts.quantity_on_hand) / len(unique_store_keys)) \
+                            .filter(RetailInventorySnapshotFacts.product_key == snapshot.product_key) \
+                            .filter(RetailInventorySnapshotFacts.date_key == snapshot.date_key) \
+                            .scalar()
+
+                        if avg_quantity_on_hand is not None:
+                            # Insert into HistoricRetailInventorySnapshotFact with average quantity_on_hand
+                            historic_snapshot = HistoricRetailInventorySnapshotFact(
+                                date_key=snapshot.date_key,
+                                product_key=snapshot.product_key,
+                                quantity_on_hand=avg_quantity_on_hand
+                                # Add other fields as necessary
+                            )
+                            session.add(historic_snapshot)
+
+                        # Delete the snapshot data from RetailInventorySnapshotFacts
+                        session.delete(snapshot)
+
+        # Commit changes after all operations
+        session.commit()
+
+        return jsonify({'message': 'Snapshot data moved to historic table as per criteria'}), 200
+
+    else:
+        return jsonify({'message': 'Method not allowed'}), 405
+
+
 
 @app.route('/inventory')
 def inventory_simulation():
@@ -252,10 +313,32 @@ def display_snapshot_historic():
     historic_retail_inventory_snapshot_fact = HistoricRetailInventorySnapshotFact.query.all()
     return render_template('snapshot_historic.html', historic_retail_inventory_snapshot_fact = historic_retail_inventory_snapshot_fact)
 
+@app.route('/move_to_retail_snapshot', methods=['POST'])
+def move_to_retail_snapshot():
+    if request.method == 'POST':
+        # Move all data from HistoricRetailInventorySnapshotFact back to RetailInventorySnapshotFacts
+        historic_snapshots = HistoricRetailInventorySnapshotFact.query.all()
+
+        for snapshot in historic_snapshots:
+            retail_snapshot = RetailInventorySnapshotFacts(
+                date_key=snapshot.date_start,
+                product_key=snapshot.product_key,
+                store_key=snapshot.store_key,
+                quantity_on_hand=snapshot.quantity_on_hand
+                # Add other fields as necessary
+            )
+            db.session.add(retail_snapshot)
+            db.session.delete(snapshot)  # Delete from Historic table after moving
+            db.session.commit()
+
+        return jsonify({'message': 'Data moved back to RetailInventorySnapshotFacts'}), 200
+    else:
+        return jsonify({'message': 'Method not allowed'}), 405
+
+
 @app.route('/inventory-simulation')
 def display_inventory_simulation():
     return render_template('inventory_simulation.html')
-
 
 @app.route('/promotion_data')
 def promotion_data():
@@ -282,6 +365,10 @@ def promotion_data():
     }
 
     return jsonify(data)
+
+@app.route('/semi_additive_data')
+def semi_additive():
+    pass
 
 def generate_unique_cashier_key():
     unique_code = str(uuid.uuid4().int)[:3]

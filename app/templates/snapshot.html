@@ -6,8 +6,8 @@
         <h4 class="text-center pt-5">Simulasi Perpindahan Data Snapshot</h4>
         <h6 class="text-center">Silakan tekan button di bawah ini untuk memindahkan snapshots terbaru ke Past Snapshots</h6>
         <div class="d-flex justify-content-center mt-5">
-            <button type="button" class="btn btn-warning">Pindahkan</button>
-        </div>    
+            <button type="button" class="btn btn-warning" id="pindahkanBtn">Pindahkan</button>
+        </div>
     </div>
     
     <h5 class="text-center mt-3 pt-3">Current Snapshot</h5>
@@ -20,10 +20,48 @@
                     <th scope="col">Date Key</th>
                     <th scope="col">Product Key</th>
                     <th scope="col">Store Key</th>
-                    <th scope="col">Quantiy on Hand</th>
+                    <th scope="col">Quantity on Hand</th>
                 </tr>
             </thead>
+            <tbody>
+                {% for retail_snapshot in retail_inventory_snapshot_facts %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ retail_snapshot.date_key }}</td>
+                        <td>{{ retail_snapshot.product_key }}</td>
+                        <td>{{ retail_snapshot.store_key }}</td>
+                        <td>{{ retail_snapshot.quantity_on_hand }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
         </table>
     </div>
 </div>
+
+<script>
+    document.getElementById("pindahkanBtn").addEventListener("click", function() {
+        // Perform an HTTP POST request to Flask backend
+        fetch('/move_snapshot', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ action: 'move_snapshot' }) // You can include additional data if needed
+        })
+        .then(response => {
+            if (response.ok) {
+                // Handle success response here if needed
+                console.log("Snapshot data moved successfully");
+                // Reload the page after the operation is completed (optional)
+                window.location.reload();
+            } else {
+                // Handle error response here if needed
+                console.error("Failed to move snapshot data");
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    });
+    </script>
 {% endblock %}

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 16, 2023 at 01:35 AM
+-- Generation Time: Nov 24, 2023 at 08:45 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `database_toko`
+-- Database: `toko`
 --
 
 -- --------------------------------------------------------
@@ -440,6 +440,58 @@ INSERT INTO `date_dimension` (`date_key`, `date`, `full_date_desc`, `day_of_week
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `historic_retail_inventory_snapshot_fact`
+--
+
+CREATE TABLE `historic_retail_inventory_snapshot_fact` (
+  `snapshot_key` int(11) NOT NULL,
+  `date_key` int(11) DEFAULT NULL,
+  `product_key` varchar(5) DEFAULT NULL,
+  `store_key` varchar(5) DEFAULT NULL,
+  `quantity_on_hand` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `inventory_receipt_accumulating_fact`
+--
+
+CREATE TABLE `inventory_receipt_accumulating_fact` (
+  `product_lot_receipt_number` int(11) NOT NULL,
+  `date_received_key` int(11) DEFAULT NULL,
+  `date_inspected_key` int(11) DEFAULT NULL,
+  `date_bin_placement_key` int(11) DEFAULT NULL,
+  `date_initial_shipment_key` int(11) DEFAULT NULL,
+  `date_last_shipment_key` int(11) DEFAULT NULL,
+  `product_key` varchar(5) DEFAULT NULL,
+  `warehouse_key` int(11) DEFAULT NULL,
+  `vendor_key` int(11) DEFAULT NULL,
+  `quantity_received` int(11) DEFAULT NULL,
+  `quantity_inspected` int(11) DEFAULT NULL,
+  `quantity_returned_to_vendor` int(11) DEFAULT NULL,
+  `quantity_placed_in_bin` int(11) DEFAULT NULL,
+  `quantity_shipped_to_customer` int(11) DEFAULT NULL,
+  `quantity_returned_by_customer` int(11) DEFAULT NULL,
+  `quantity_returned_to_inventory` int(11) DEFAULT NULL,
+  `quantity_damaged` int(11) DEFAULT NULL,
+  `receipt_to_inspected_lag` int(11) DEFAULT NULL,
+  `receipt_to_bin_placement_lag` int(11) DEFAULT NULL,
+  `receipt_to_initial_shipment_lag` int(11) DEFAULT NULL,
+  `initial_to_last_shipment_lag` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `inventory_receipt_accumulating_fact`
+--
+
+INSERT INTO `inventory_receipt_accumulating_fact` (`product_lot_receipt_number`, `date_received_key`, `date_inspected_key`, `date_bin_placement_key`, `date_initial_shipment_key`, `date_last_shipment_key`, `product_key`, `warehouse_key`, `vendor_key`, `quantity_received`, `quantity_inspected`, `quantity_returned_to_vendor`, `quantity_placed_in_bin`, `quantity_shipped_to_customer`, `quantity_returned_by_customer`, `quantity_returned_to_inventory`, `quantity_damaged`, `receipt_to_inspected_lag`, `receipt_to_bin_placement_lag`, `receipt_to_initial_shipment_lag`, `initial_to_last_shipment_lag`) VALUES
+(101, 20231121, 0, 0, 0, 0, '10354', 111, 101, 10, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, NULL, NULL),
+(102, 20231121, 0, 0, 0, 0, '10354', 112, 102, 10, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `payment_method_dimension`
 --
 
@@ -517,6 +569,176 @@ INSERT INTO `promotion_dimension` (`promotion_key`, `promotion_code`, `promotion
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `retail_inventory_snapshot_facts`
+--
+
+CREATE TABLE `retail_inventory_snapshot_facts` (
+  `snapshot_key` int(10) NOT NULL,
+  `date_key` int(11) NOT NULL,
+  `product_key` varchar(5) NOT NULL,
+  `store_key` varchar(5) DEFAULT NULL,
+  `quantity_on_hand` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `retail_inventory_snapshot_facts`
+--
+
+INSERT INTO `retail_inventory_snapshot_facts` (`snapshot_key`, `date_key`, `product_key`, `store_key`, `quantity_on_hand`) VALUES
+(7, 20231116, '10354', '2123', 89),
+(8, 20231116, '10796', '2123', 73),
+(9, 20231116, '11718', '2123', 62),
+(10, 20231116, '12341', '2123', 72),
+(11, 20231116, '14205', '2123', 82),
+(12, 20231116, '10354', '2124', 69),
+(13, 20231116, '10796', '2124', 91),
+(14, 20231116, '11718', '2124', 55),
+(15, 20231116, '12341', '2124', 92),
+(16, 20231116, '14205', '2124', 71),
+(17, 20231116, '10354', '2125', 88),
+(18, 20231116, '10796', '2125', 52),
+(19, 20231116, '11718', '2125', 84),
+(20, 20231116, '12341', '2125', 68),
+(21, 20231116, '14205', '2125', 52),
+(22, 20231116, '10354', '2126', 92),
+(23, 20231116, '10796', '2126', 65),
+(24, 20231116, '11718', '2126', 60),
+(25, 20231116, '12341', '2126', 87),
+(26, 20231116, '14205', '2126', 64),
+(27, 20231116, '10354', '2127', 80),
+(28, 20231116, '10796', '2127', 65),
+(29, 20231116, '11718', '2127', 63),
+(30, 20231116, '12341', '2127', 53),
+(31, 20231116, '14205', '2127', 97),
+(32, 20231117, '10354', '2123', 78),
+(33, 20231117, '10796', '2123', 52),
+(34, 20231117, '11718', '2123', 61),
+(35, 20231117, '12341', '2123', 71),
+(36, 20231117, '14205', '2123', 53),
+(37, 20231117, '10354', '2124', 68),
+(38, 20231117, '10796', '2124', 58),
+(39, 20231117, '11718', '2124', 59),
+(40, 20231117, '12341', '2124', 57),
+(41, 20231117, '14205', '2124', 84),
+(42, 20231117, '10354', '2125', 63),
+(43, 20231117, '10796', '2125', 100),
+(44, 20231117, '11718', '2125', 98),
+(45, 20231117, '12341', '2125', 73),
+(46, 20231117, '14205', '2125', 90),
+(47, 20231117, '10354', '2126', 75),
+(48, 20231117, '10796', '2126', 55),
+(49, 20231117, '11718', '2126', 77),
+(50, 20231117, '12341', '2126', 80),
+(51, 20231117, '14205', '2126', 94),
+(52, 20231117, '10354', '2127', 81),
+(53, 20231117, '10796', '2127', 98),
+(54, 20231117, '11718', '2127', 50),
+(55, 20231117, '12341', '2127', 55),
+(56, 20231117, '14205', '2127', 64),
+(57, 20231118, '10354', '2123', 93),
+(58, 20231118, '10796', '2123', 71),
+(59, 20231118, '11718', '2123', 100),
+(60, 20231118, '12341', '2123', 64),
+(61, 20231118, '14205', '2123', 80),
+(62, 20231118, '10354', '2124', 60),
+(63, 20231118, '10796', '2124', 52),
+(64, 20231118, '11718', '2124', 60),
+(65, 20231118, '12341', '2124', 89),
+(66, 20231118, '14205', '2124', 73),
+(67, 20231118, '10354', '2125', 82),
+(68, 20231118, '10796', '2125', 70),
+(69, 20231118, '11718', '2125', 94),
+(70, 20231118, '12341', '2125', 54),
+(71, 20231118, '14205', '2125', 83),
+(72, 20231118, '10354', '2126', 98),
+(73, 20231118, '10796', '2126', 95),
+(74, 20231118, '11718', '2126', 79),
+(75, 20231118, '12341', '2126', 51),
+(76, 20231118, '14205', '2126', 67),
+(77, 20231118, '10354', '2127', 79),
+(78, 20231118, '10796', '2127', 63),
+(79, 20231118, '11718', '2127', 78),
+(80, 20231118, '12341', '2127', 91),
+(81, 20231118, '14205', '2127', 82),
+(82, 20231119, '10354', '2123', 60),
+(83, 20231119, '10796', '2123', 73),
+(84, 20231119, '11718', '2123', 81),
+(85, 20231119, '12341', '2123', 60),
+(86, 20231119, '14205', '2123', 95),
+(87, 20231119, '10354', '2124', 57),
+(88, 20231119, '10796', '2124', 72),
+(89, 20231119, '11718', '2124', 54),
+(90, 20231119, '12341', '2124', 63),
+(91, 20231119, '14205', '2124', 96),
+(92, 20231119, '10354', '2125', 52),
+(93, 20231119, '10796', '2125', 55),
+(94, 20231119, '11718', '2125', 63),
+(95, 20231119, '12341', '2125', 96),
+(96, 20231119, '14205', '2125', 86),
+(97, 20231119, '10354', '2126', 61),
+(98, 20231119, '10796', '2126', 98),
+(99, 20231119, '11718', '2126', 92),
+(100, 20231119, '12341', '2126', 70),
+(101, 20231119, '14205', '2126', 80),
+(102, 20231119, '10354', '2127', 83),
+(103, 20231119, '10796', '2127', 77),
+(104, 20231119, '11718', '2127', 58),
+(105, 20231119, '12341', '2127', 67),
+(106, 20231119, '14205', '2127', 86),
+(107, 20231120, '10354', '2123', 89),
+(108, 20231120, '10796', '2123', 91),
+(109, 20231120, '11718', '2123', 98),
+(110, 20231120, '12341', '2123', 52),
+(111, 20231120, '14205', '2123', 63),
+(112, 20231120, '10354', '2124', 58),
+(113, 20231120, '10796', '2124', 61),
+(114, 20231120, '11718', '2124', 55),
+(115, 20231120, '12341', '2124', 81),
+(116, 20231120, '14205', '2124', 89),
+(117, 20231120, '10354', '2125', 69),
+(118, 20231120, '10796', '2125', 94),
+(119, 20231120, '11718', '2125', 76),
+(120, 20231120, '12341', '2125', 62),
+(121, 20231120, '14205', '2125', 85),
+(122, 20231120, '10354', '2126', 98),
+(123, 20231120, '10796', '2126', 89),
+(124, 20231120, '11718', '2126', 72),
+(125, 20231120, '12341', '2126', 76),
+(126, 20231120, '14205', '2126', 61),
+(127, 20231120, '10354', '2127', 92),
+(128, 20231120, '10796', '2127', 93),
+(129, 20231120, '11718', '2127', 56),
+(130, 20231120, '12341', '2127', 84),
+(131, 20231120, '14205', '2127', 70),
+(132, 20231121, '10354', '2123', 60),
+(133, 20231121, '10796', '2123', 57),
+(134, 20231121, '11718', '2123', 64),
+(135, 20231121, '12341', '2123', 98),
+(136, 20231121, '14205', '2123', 64),
+(137, 20231121, '10354', '2124', 91),
+(138, 20231121, '10796', '2124', 64),
+(139, 20231121, '11718', '2124', 66),
+(140, 20231121, '12341', '2124', 70),
+(141, 20231121, '14205', '2124', 83),
+(142, 20231121, '10354', '2125', 63),
+(143, 20231121, '10796', '2125', 78),
+(144, 20231121, '11718', '2125', 79),
+(145, 20231121, '12341', '2125', 100),
+(146, 20231121, '14205', '2125', 92),
+(147, 20231121, '10354', '2126', 56),
+(148, 20231121, '10796', '2126', 91),
+(149, 20231121, '11718', '2126', 65),
+(150, 20231121, '12341', '2126', 100),
+(151, 20231121, '14205', '2126', 89),
+(152, 20231121, '10354', '2127', 64),
+(153, 20231121, '10796', '2127', 83),
+(154, 20231121, '11718', '2127', 69),
+(155, 20231121, '12341', '2127', 99),
+(156, 20231121, '14205', '2127', 77);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `retail_sales_facts`
 --
 
@@ -538,6 +760,59 @@ CREATE TABLE `retail_sales_facts` (
   `extended_cost_dollar_amount` decimal(10,2) DEFAULT NULL,
   `extended_gross_profit_dollar_amount` decimal(10,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `retail_sales_facts`
+--
+
+INSERT INTO `retail_sales_facts` (`retail_id`, `date_key`, `product_key`, `store_key`, `promotion_key`, `cashier_key`, `payment_method_key`, `pos_transaction`, `sales_quantity`, `regular_unit_price`, `discount_unit_price`, `net_unit_price`, `extended_discount_dollar_amount`, `extended_sales_dollar_amount`, `extended_cost_dollar_amount`, `extended_gross_profit_dollar_amount`) VALUES
+(142, 20230118, '12341', '2124', '28971', 'CASHIER317', '29238', 'offline', 1, 3000.00, 0.00, 3000.00, 0.00, 3000.00, 2700.00, 300.00),
+(143, 20231008, '10354', '2123', '28971', 'CASHIER262', '19321', 'offline', 10, 21000.00, 0.00, 21000.00, 0.00, 210000.00, 160000.00, 50000.00),
+(144, 20231206, '10796', '2123', '28971', 'CASHIER177', '19321', 'offline', 7, 36500.00, 0.00, 36500.00, 0.00, 255500.00, 220500.00, 35000.00),
+(145, 20230217, '11718', '2124', '28971', 'CASHIER262', '19321', 'offline', 2, 25000.00, 0.00, 25000.00, 0.00, 50000.00, 40000.00, 10000.00),
+(146, 20230615, '10354', '2123', '28971', 'CASHIER208', '29238', 'offline', 2, 21000.00, 0.00, 21000.00, 0.00, 42000.00, 32000.00, 10000.00),
+(147, 20230603, '11718', '2125', '28971', 'CASHIER115', '29238', 'offline', 5, 25000.00, 0.00, 25000.00, 0.00, 125000.00, 100000.00, 25000.00),
+(148, 20230503, '12341', '2127', '28971', 'CASHIER167', '78462', 'offline', 9, 3000.00, 0.00, 3000.00, 0.00, 27000.00, 24300.00, 2700.00),
+(149, 20230921, '10796', '2126', '28971', 'CASHIER115', '29238', 'offline', 7, 36500.00, 0.00, 36500.00, 0.00, 255500.00, 220500.00, 35000.00),
+(150, 20230320, '11718', '2127', '28971', 'CASHIER262', '78462', 'offline', 2, 25000.00, 0.00, 25000.00, 0.00, 50000.00, 40000.00, 10000.00),
+(151, 20231024, '10354', '2124', '28971', 'CASHIER167', '29238', 'offline', 6, 21000.00, 0.00, 21000.00, 0.00, 126000.00, 96000.00, 30000.00),
+(152, 20231010, '10354', '2124', '28971', 'CASHIER167', '19321', 'offline', 2, 21000.00, 0.00, 21000.00, 0.00, 42000.00, 32000.00, 10000.00),
+(153, 20230201, '10354', '2127', '28971', 'CASHIER115', '24974', 'offline', 10, 21000.00, 0.00, 21000.00, 0.00, 210000.00, 160000.00, 50000.00),
+(154, 20230529, '10354', '2123', '28971', 'CASHIER262', '78462', 'offline', 3, 21000.00, 0.00, 21000.00, 0.00, 63000.00, 48000.00, 15000.00),
+(155, 20230511, '10354', '2124', '28971', 'CASHIER167', '24974', 'offline', 1, 21000.00, 0.00, 21000.00, 0.00, 21000.00, 16000.00, 5000.00),
+(156, 20230322, '10354', '2124', '28971', 'CASHIER208', '29238', 'offline', 6, 21000.00, 0.00, 21000.00, 0.00, 126000.00, 96000.00, 30000.00),
+(157, 20230722, '12341', '2127', '28971', 'CASHIER167', '78462', 'offline', 4, 3000.00, 0.00, 3000.00, 0.00, 12000.00, 10800.00, 1200.00),
+(158, 20230720, '14205', '2124', '28971', 'CASHIER115', '29238', 'offline', 2, 17500.00, 0.00, 17500.00, 0.00, 35000.00, 25000.00, 10000.00),
+(159, 20230727, '11718', '2126', '28971', 'CASHIER115', '78462', 'offline', 7, 25000.00, 0.00, 25000.00, 0.00, 175000.00, 140000.00, 35000.00),
+(160, 20230908, '12341', '2124', '28971', 'CASHIER115', '29238', 'offline', 8, 3000.00, 0.00, 3000.00, 0.00, 24000.00, 21600.00, 2400.00),
+(161, 20230629, '14205', '2124', '28971', 'CASHIER317', '29238', 'offline', 3, 17500.00, 0.00, 17500.00, 0.00, 52500.00, 37500.00, 15000.00),
+(162, 20230601, '12341', '2124', '28971', 'CASHIER115', '24974', 'offline', 6, 3000.00, 0.00, 3000.00, 0.00, 18000.00, 16200.00, 1800.00),
+(163, 20230627, '14205', '2126', '28971', 'CASHIER103', '29238', 'offline', 6, 17500.00, 0.00, 17500.00, 0.00, 105000.00, 75000.00, 30000.00),
+(164, 20230527, '11718', '2125', '28971', 'CASHIER103', '78462', 'offline', 9, 25000.00, 0.00, 25000.00, 0.00, 225000.00, 180000.00, 45000.00),
+(165, 20230406, '14205', '2125', '28971', 'CASHIER208', '78462', 'offline', 5, 17500.00, 0.00, 17500.00, 0.00, 87500.00, 62500.00, 25000.00),
+(166, 20230911, '10796', '2125', '28971', 'CASHIER208', '24974', 'offline', 6, 36500.00, 0.00, 36500.00, 0.00, 219000.00, 189000.00, 30000.00),
+(167, 20230518, '10354', '2125', '28971', 'CASHIER167', '78462', 'offline', 2, 21000.00, 0.00, 21000.00, 0.00, 42000.00, 32000.00, 10000.00),
+(168, 20230526, '12341', '2123', '28971', 'CASHIER262', '29238', 'offline', 7, 3000.00, 0.00, 3000.00, 0.00, 21000.00, 18900.00, 2100.00),
+(169, 20231224, '14205', '2126', '28971', 'CASHIER103', '78462', 'offline', 2, 17500.00, 0.00, 17500.00, 0.00, 35000.00, 25000.00, 10000.00),
+(170, 20231107, '14205', '2123', '28971', 'CASHIER222', '19321', 'offline', 9, 17500.00, 0.00, 17500.00, 0.00, 157500.00, 112500.00, 45000.00),
+(171, 20230409, '11718', '2126', '28971', 'CASHIER115', '24974', 'offline', 3, 25000.00, 0.00, 25000.00, 0.00, 75000.00, 60000.00, 15000.00),
+(172, 20230210, '10354', '2125', '28971', 'CASHIER115', '24974', 'offline', 7, 21000.00, 0.00, 21000.00, 0.00, 147000.00, 112000.00, 35000.00),
+(173, 20230518, '14205', '2125', '28971', 'CASHIER262', '78462', 'offline', 7, 17500.00, 0.00, 17500.00, 0.00, 122500.00, 87500.00, 35000.00),
+(174, 20231128, '10796', '2125', '28971', 'CASHIER103', '29238', 'offline', 3, 36500.00, 0.00, 36500.00, 0.00, 109500.00, 94500.00, 15000.00),
+(175, 20230806, '14205', '2126', '28971', 'CASHIER115', '29238', 'offline', 1, 17500.00, 0.00, 17500.00, 0.00, 17500.00, 12500.00, 5000.00),
+(176, 20230113, '10354', '2123', '28971', 'CASHIER167', '19321', 'offline', 6, 21000.00, 0.00, 21000.00, 0.00, 126000.00, 96000.00, 30000.00),
+(177, 20230323, '14205', '2125', '28971', 'CASHIER115', '19321', 'offline', 9, 17500.00, 0.00, 17500.00, 0.00, 157500.00, 112500.00, 45000.00),
+(178, 20230519, '10354', '2126', '28971', 'CASHIER262', '29238', 'offline', 5, 21000.00, 0.00, 21000.00, 0.00, 105000.00, 80000.00, 25000.00),
+(179, 20230121, '11718', '2126', '28971', 'CASHIER222', '19321', 'offline', 3, 25000.00, 0.00, 25000.00, 0.00, 75000.00, 60000.00, 15000.00),
+(180, 20230214, '12341', '2125', '12936', 'CASHIER115', '78462', 'offline', 6, 3000.00, 450.00, 2550.00, 2700.00, 15300.00, 16200.00, -900.00),
+(181, 20230101, '11718', '2124', '12719', 'CASHIER222', '19321', 'offline', 5, 25000.00, 2500.00, 22500.00, 12500.00, 112500.00, 100000.00, 12500.00),
+(182, 20230214, '10796', '2126', '12936', 'CASHIER317', '19321', 'offline', 8, 36500.00, 5475.00, 31025.00, 43800.00, 248200.00, 252000.00, -3800.00),
+(183, 20230101, '10354', '2126', '12719', 'CASHIER167', '78462', 'offline', 5, 21000.00, 2100.00, 18900.00, 10500.00, 94500.00, 80000.00, 14500.00),
+(184, 20230214, '11718', '2125', '12936', 'CASHIER177', '19321', 'offline', 2, 25000.00, 3750.00, 21250.00, 7500.00, 42500.00, 40000.00, 2500.00),
+(185, 20230214, '14205', '2126', '12936', 'CASHIER103', '78462', 'offline', 4, 17500.00, 2625.00, 14875.00, 10500.00, 59500.00, 50000.00, 9500.00),
+(186, 20230214, '10354', '2127', '12936', 'CASHIER177', '78462', 'offline', 10, 21000.00, 3150.00, 17850.00, 31500.00, 178500.00, 160000.00, 18500.00),
+(187, 20230214, '14205', '2124', '12936', 'CASHIER317', '78462', 'offline', 8, 17500.00, 2625.00, 14875.00, 21000.00, 119000.00, 100000.00, 19000.00),
+(188, 20230214, '10796', '2123', '12936', 'CASHIER167', '29238', 'offline', 8, 36500.00, 5475.00, 31025.00, 43800.00, 248200.00, 252000.00, -3800.00);
 
 -- --------------------------------------------------------
 
@@ -586,6 +861,57 @@ INSERT INTO `traveller_shopper_dimension` (`traveller_id`, `traveller_type`) VAL
 ('Buyer_003', 'Monthly_Buyer'),
 ('Buyer_004', 'Annual_Buyer');
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `vendor_dimension`
+--
+
+CREATE TABLE `vendor_dimension` (
+  `vendor_key` int(11) NOT NULL,
+  `vendor_name` varchar(255) NOT NULL,
+  `contact` varchar(255) NOT NULL,
+  `product_category` varchar(255) NOT NULL,
+  `address` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `vendor_dimension`
+--
+
+INSERT INTO `vendor_dimension` (`vendor_key`, `vendor_name`, `contact`, `product_category`, `address`) VALUES
+(101, 'Vendor A', 'Contact A', 'Snacks', 'Address A'),
+(102, 'Vendor B', 'Contact B', 'Deodorant', 'Address B'),
+(103, 'Vendor C', 'Contact C', 'Susu Anak', 'Address C');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `warehouse_dimension`
+--
+
+CREATE TABLE `warehouse_dimension` (
+  `warehouse_key` int(11) NOT NULL,
+  `warehouse_number` varchar(255) NOT NULL,
+  `warehouse_name` varchar(255) NOT NULL,
+  `warehouse_address` varchar(255) NOT NULL,
+  `warehouse_city` varchar(255) NOT NULL,
+  `warehouse_city_state` varchar(255) NOT NULL,
+  `warehouse_state` varchar(255) NOT NULL,
+  `warehouse_zip` varchar(255) NOT NULL,
+  `warehouse_zone` varchar(255) NOT NULL,
+  `warehouse_total_square_footage` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `warehouse_dimension`
+--
+
+INSERT INTO `warehouse_dimension` (`warehouse_key`, `warehouse_number`, `warehouse_name`, `warehouse_address`, `warehouse_city`, `warehouse_city_state`, `warehouse_state`, `warehouse_zip`, `warehouse_zone`, `warehouse_total_square_footage`) VALUES
+(111, '123', 'Warehouse A', 'Address A', 'City A', 'City State A', 'State A', 'Zip A', 'Zone A', 500),
+(112, '124', 'Warehouse B', 'Address B', 'City B', 'City State B', 'State B', 'Zip B', 'Zone B', 500),
+(113, '125', 'Warehouse C', 'Address C', 'City C', 'City State C', 'State C', 'Zip C', 'Zone C', 500);
+
 --
 -- Indexes for dumped tables
 --
@@ -601,6 +927,29 @@ ALTER TABLE `cashier_dimension`
 --
 ALTER TABLE `date_dimension`
   ADD PRIMARY KEY (`date_key`);
+
+--
+-- Indexes for table `historic_retail_inventory_snapshot_fact`
+--
+ALTER TABLE `historic_retail_inventory_snapshot_fact`
+  ADD PRIMARY KEY (`snapshot_key`),
+  ADD KEY `date_key` (`date_key`),
+  ADD KEY `product_key` (`product_key`),
+  ADD KEY `store_key` (`store_key`);
+
+--
+-- Indexes for table `inventory_receipt_accumulating_fact`
+--
+ALTER TABLE `inventory_receipt_accumulating_fact`
+  ADD PRIMARY KEY (`product_lot_receipt_number`),
+  ADD KEY `date_received_key` (`date_received_key`),
+  ADD KEY `date_inspected_key` (`date_inspected_key`),
+  ADD KEY `date_bin_placement_key` (`date_bin_placement_key`),
+  ADD KEY `date_initial_shipment_key` (`date_initial_shipment_key`),
+  ADD KEY `date_last_shipment_key` (`date_last_shipment_key`),
+  ADD KEY `product_key` (`product_key`),
+  ADD KEY `warehouse_key` (`warehouse_key`),
+  ADD KEY `vendor_key` (`vendor_key`);
 
 --
 -- Indexes for table `payment_method_dimension`
@@ -620,6 +969,15 @@ ALTER TABLE `product_dimension`
 --
 ALTER TABLE `promotion_dimension`
   ADD PRIMARY KEY (`promotion_key`);
+
+--
+-- Indexes for table `retail_inventory_snapshot_facts`
+--
+ALTER TABLE `retail_inventory_snapshot_facts`
+  ADD PRIMARY KEY (`snapshot_key`),
+  ADD KEY `date_key` (`date_key`),
+  ADD KEY `product_key` (`product_key`),
+  ADD KEY `store_key` (`store_key`);
 
 --
 -- Indexes for table `retail_sales_facts`
@@ -646,18 +1004,72 @@ ALTER TABLE `traveller_shopper_dimension`
   ADD PRIMARY KEY (`traveller_id`);
 
 --
+-- Indexes for table `vendor_dimension`
+--
+ALTER TABLE `vendor_dimension`
+  ADD PRIMARY KEY (`vendor_key`);
+
+--
+-- Indexes for table `warehouse_dimension`
+--
+ALTER TABLE `warehouse_dimension`
+  ADD PRIMARY KEY (`warehouse_key`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
+
+--
+-- AUTO_INCREMENT for table `historic_retail_inventory_snapshot_fact`
+--
+ALTER TABLE `historic_retail_inventory_snapshot_fact`
+  MODIFY `snapshot_key` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=126;
+
+--
+-- AUTO_INCREMENT for table `retail_inventory_snapshot_facts`
+--
+ALTER TABLE `retail_inventory_snapshot_facts`
+  MODIFY `snapshot_key` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=157;
 
 --
 -- AUTO_INCREMENT for table `retail_sales_facts`
 --
 ALTER TABLE `retail_sales_facts`
-  MODIFY `retail_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `retail_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=189;
+
+--
+-- AUTO_INCREMENT for table `warehouse_dimension`
+--
+ALTER TABLE `warehouse_dimension`
+  MODIFY `warehouse_key` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=114;
 
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `historic_retail_inventory_snapshot_fact`
+--
+ALTER TABLE `historic_retail_inventory_snapshot_fact`
+  ADD CONSTRAINT `historic_retail_inventory_snapshot_fact_ibfk_1` FOREIGN KEY (`date_key`) REFERENCES `date_dimension` (`date_key`),
+  ADD CONSTRAINT `historic_retail_inventory_snapshot_fact_ibfk_2` FOREIGN KEY (`product_key`) REFERENCES `product_dimension` (`product_key`),
+  ADD CONSTRAINT `historic_retail_inventory_snapshot_fact_ibfk_3` FOREIGN KEY (`store_key`) REFERENCES `store_dimension` (`store_key`);
+
+--
+-- Constraints for table `inventory_receipt_accumulating_fact`
+--
+ALTER TABLE `inventory_receipt_accumulating_fact`
+  ADD CONSTRAINT `inventory_receipt_accumulating_fact_ibfk_6` FOREIGN KEY (`product_key`) REFERENCES `product_dimension` (`product_key`),
+  ADD CONSTRAINT `inventory_receipt_accumulating_fact_ibfk_7` FOREIGN KEY (`warehouse_key`) REFERENCES `warehouse_dimension` (`warehouse_key`),
+  ADD CONSTRAINT `inventory_receipt_accumulating_fact_ibfk_8` FOREIGN KEY (`vendor_key`) REFERENCES `vendor_dimension` (`vendor_key`);
+
+--
+-- Constraints for table `retail_inventory_snapshot_facts`
+--
+ALTER TABLE `retail_inventory_snapshot_facts`
+  ADD CONSTRAINT `retail_inventory_snapshot_facts_ibfk_1` FOREIGN KEY (`date_key`) REFERENCES `date_dimension` (`date_key`),
+  ADD CONSTRAINT `retail_inventory_snapshot_facts_ibfk_2` FOREIGN KEY (`product_key`) REFERENCES `product_dimension` (`product_key`),
+  ADD CONSTRAINT `retail_inventory_snapshot_facts_ibfk_3` FOREIGN KEY (`store_key`) REFERENCES `store_dimension` (`store_key`);
 
 --
 -- Constraints for table `retail_sales_facts`

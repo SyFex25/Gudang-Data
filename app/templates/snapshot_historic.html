@@ -9,10 +9,26 @@
                     <th scope="col">No</th>
                     <th scope="col">Date Key</th>
                     <th scope="col">Product Key</th>
-                    <th scope="col">Store Key</th>
-                    <th scope="col">Quantiy on Hand</th>
+                    <th scope="col">Quantity on Hand (Avg)</th>
                 </tr>
             </thead>
+            <tbody>
+                {% for snapshot in historic_retail_inventory_snapshot_fact %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ snapshot.date_key }}</td>
+                    <td>{{ snapshot.product_key }}</td>
+                    <td>{{ snapshot.quantity_on_hand }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
         </table>
+    </div>    
+    <div class="mt-3">
+        <form action="/move_to_retail_snapshot" method="POST">
+            <button type="submit" class="btn btn-primary">Move Data Back to Retail Inventory</button>
+        </form>
     </div>
+</div>
+</div>
 {% endblock %}
