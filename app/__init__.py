@@ -382,3 +382,17 @@ def get_holiday_dates():
     holiday_dates = ['2023-01-01', '2023-03-25', '2023-12-25', '2023-07-04', '2023-19-04', '2023-04-20', '2023-04-21', '2023-04-22', '2023-04-23', '2023-04-24', '2023-04-25']
     return holiday_dates
 
+@app.route('/convert_date', methods=['POST'])
+def convert_date():
+    selected_date = request.json.get('date')
+    
+    if selected_date:
+        date_entry = DateDimension.query.filter_by(date=selected_date).first()
+
+        if date_entry:
+            date_key = date_entry.date_key
+            return jsonify({'dateKey': date_key})
+        else:
+            return jsonify({'error': 'Date not found in DateDimension table'}), 404
+    else:
+        return jsonify({'error': 'Invalid date parameter'}), 400

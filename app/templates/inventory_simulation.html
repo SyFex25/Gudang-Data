@@ -77,6 +77,20 @@
         </div>   
 
         <div class="content pt-5" id="page5" style="display: none;">
+            <h4>Bin Placement</h4>
+            <p>Select Date and Bin Placement Quantities</p>
+            <div class="d-flex justify-content-center">
+                <div class="me-2" id="placement-date">
+                    <input type="date" class="form-control" id="placementDate" style="width: 300px;">
+                </div>
+                <input class="form-control" type="number" placeholder="Bin Placement+ Qtys" style="width: 300px;">
+
+            </div>
+            <button class="btn btn-primary mt-3" onclick="showPrevPage()">Back</button>
+            <button class="btn btn-primary mt-3" onclick="showNextPage(this)">Next</button>
+        </div> 
+
+        <div class="content pt-5" id="page6" style="display: none;">
             <h4>Goods Shipment</h4>
             <p>Initial inspection findings</p>
             <div class="d-flex justify-content-center">
@@ -94,7 +108,7 @@
             <button class="btn btn-primary mt-3" onclick="showNextPage(this)">Next</button>
         </div> 
         
-        <div class="content pt-5" id="page6" style="display: none;">
+        <div class="content pt-5" id="page7" style="display: none;">
             <h4>Shipment Result</h4>
             <div class="d-flex justify-content-center">
                 <input class="form-control me-2" type="number" placeholder="Shipped to Cust Qtys" style="width: 200px;">
@@ -103,16 +117,16 @@
                 <input class="form-control" type="number" placeholder="Damaged Qtys" style="width: 200px;">
             </div>
             <button class="btn btn-primary mt-3" onclick="showPrevPage()">Back</button>
-            <button class="btn btn-primary mt-3" onclick="showNextPage(this)">Next</button>
+            <button class="btn btn-success mt-3 rounded-pill" onclick="save()">Save</button>
         </div>  
 
-        <div class="content pt-5" id="page7" style="display: none;">
+        <div class="content pt-5" id="page8" style="display: none;">
             <h4>Shipment Result</h4>
             <p>(Coming Soon) Nanti ini nampilin lagnya tiap suatu tasks dll</p>
-            <button class="btn btn-success mt-3 rounded-pill" onclick="save()">Save</button>
         </div>  
     </div>
 </div>
+
 
 <script>
     let currentPage = 1;

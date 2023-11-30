@@ -2,13 +2,139 @@
 {% block body %}
 <div class="inner m-5">
     <h2 class="text-center pb-3 text-primary">Inventory</h2>
-    <div class="container-sm bg-light rounded p-3" style="min-height: 300px;">
+    <div class="container-sm bg-light rounded p-3 mb-3" style="min-height: 300px;">
         <h4 class="text-center pt-5">Simulasi Perpindahan Inventory</h4>
         <h6 class="text-center">Silakan tekan button di bawah ini untuk melakukan simulasi</h6>
         <div class="d-flex justify-content-center mt-5">
             <a href="/inventory-simulation"><button type="button" class="btn btn-warning">Mulai!</button></a>
         </div> 
-           
+    </div>
+    <h4 class="text-center">Inventory Table</h4>  
+    <div class="overflow-x-auto">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">No</th>
+                    <th scope="col">Product Lot Receipt Number</th>
+                    <th scope="col">Date Received Key</th>
+                    <th scope="col">Date Inspected Key</th>
+                    <th scope="col">Date Bin Placement Key</th>
+                    <th scope="col">Next</th>
+                </tr>
+            </thead>
+            <tbody scope="row" id="data-table-body">
+                {% if inventory_receipt_accumulating_fact %}
+                    {% for data in inventory_receipt_accumulating_fact %}
+                        <tr>
+                            <th scope="row">{{ loop.index }}</th>
+                            <td>{{ data.product_lot_receipt_number }}</td>
+                            <td>{{ data.date_received_key }}</td>
+                            <td>{{ data.date_inspected_key }}</td>
+                            <td>{{ data.date_bin_placement_key }}</td>
+                            <td><button class="btn btn-primary rounded-pill next-btn">Next</button></td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="15">Tabel kosong</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal -->
+<div class="modal fade" id="dateModal" tabindex="-1" role="dialog" aria-labelledby="dateModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="dateModalLabel">Pilih Tanggal</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="datepicker">Tanggal:</label>
+                    <input type="date" class="form-control" id="datepicker">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="saveDateBtn">Simpan</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+            </div>
+        </div>
     </div>
 </div>
+
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('button.next-btn').on('click', function () {
+            var row = $(this).closest('tr');
+    
+            var columns = row.find('td');
+    
+            var currentColIndex = row.data('currentColIndex') || 0;
+    
+            var currentColValue = $(columns[currentColIndex]).text().trim();
+    
+            if (currentColValue === '0') {
+                $('#dateModal').modal('show');
+    
+                $('#saveDateBtn').off('click').on('click', function () {
+                    var selectedDate = $('#datepicker').val();
+
+                    if (selectedDate) {
+                        $.ajax({
+                            url: '/convert_date',
+                            method: 'POST',
+                            contentType: 'application/json',
+                            data: JSON.stringify({ date: selectedDate }),
+                            dataType: 'json',
+                            success: function (data) {
+                                console.log('Server Response:', data);
+
+                                alert('Converted Date Key: ' + data.dateKey);
+
+                                $(columns[currentColIndex]).text(data.dateKey);
+                                moveToNextColumn(row, columns);
+                                $('#dateModal').modal('hide');
+                            },
+                            error: function () {
+                                alert('Failed to convert date.');
+                            }
+                        });
+                    } else {
+                        alert('Tanggal harus diisi!');
+                    }
+                });
+                } else {
+                moveToNextColumn(row, columns);
+            }
+        });
+    
+        function moveToNextColumn(row, columns) {
+            var currentColIndex = row.data('currentColIndex') || 0;
+    
+            columns.removeClass('bg-success');
+    
+            currentColIndex++;
+    
+            if (currentColIndex >= columns.length - 1) {
+                row.off('click', 'button.next-btn');
+                return;
+            }
+    
+            $(columns[currentColIndex]).addClass('bg-success');
+    
+            row.data('currentColIndex', currentColIndex);
+        }
+    });
+</script>
+
 {% endblock %}
