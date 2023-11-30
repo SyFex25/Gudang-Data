@@ -130,36 +130,6 @@ class WarehouseDimension(db.Model):
     warehouse_zone = db.Column(db.String(255), nullable=False)
     warehouse_total_square_footage = db.Column(db.Integer, nullable=False)
 
-class DateBinPlacementDimension(db.Model):
-    __tablename__ = 'date_bin_placement_dimension'
-    date_bin_placement_key = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    date_bin_placement = db.Column(db.Date)
-    pic = db.Column(db.String(255))
-
-class DateInitialShipmentDimension(db.Model):
-    __tablename__ = 'date_initial_shipment_dimension'
-    date_initial_shipment_key = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    date_initial_shipment = db.Column(db.Date)
-    pic = db.Column(db.String(255))
-
-class DateInspectedDimension(db.Model):
-    __tablename__ = 'date_inspected_dimension'
-    date_inspected_key = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    date_inspected = db.Column(db.Date)
-    pic = db.Column(db.String(255))
-
-class DateLastShipmentDimension(db.Model):
-    __tablename__ = 'date_last_shipment_dimension'
-    date_last_shipment_key = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    date_last_shipment = db.Column(db.Date)
-    pic = db.Column(db.String(255))
-
-class DateReceivedDimension(db.Model):
-    __tablename__ = 'date_received_dimension'
-    date_received_key = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    date_received = db.Column(db.Date)
-    pic = db.Column(db.String(255))
-
 class HistoricRetailInventorySnapshotFact(db.Model):
     __tablename__ = 'historic_retail_inventory_snapshot_fact'
     snapshot_key = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -170,11 +140,11 @@ class HistoricRetailInventorySnapshotFact(db.Model):
 class InventoryReceiptAccumulatingFact(db.Model):
     __tablename__ = 'inventory_receipt_accumulating_fact'
     product_lot_receipt_number = db.Column(db.Integer, primary_key=True)
-    date_received_key = db.Column(db.Integer, db.ForeignKey('date_received_dimension.date_received_key'))
-    date_inspected_key = db.Column(db.Integer, db.ForeignKey('date_inspected_dimension.date_key'))
-    date_bin_placement_key = db.Column(db.Integer, db.ForeignKey('date_bin_placement_dimension.date_bin_placement_key'))
-    date_initial_shipment_key = db.Column(db.Integer, db.ForeignKey('date_initial_shipment.date_initial_shipment_key'))
-    date_last_shipment_key = db.Column(db.Integer, db.ForeignKey('date_last_shipment.date_last_shipment_key'))
+    date_received_key = db.Column(db.Integer, db.ForeignKey('date_dimension.date_key'))
+    date_inspected_key = db.Column(db.Integer, db.ForeignKey('date_dimension.date_key'))
+    date_bin_placement_key = db.Column(db.Integer, db.ForeignKey('date_dimension.date_key'))
+    date_initial_shipment_key = db.Column(db.Integer, db.ForeignKey('date_dimension.date_key'))
+    date_last_shipment_key = db.Column(db.Integer, db.ForeignKey('date_dimension.date_key'))
     product_key = db.Column(db.String(5), db.ForeignKey('product_dimension.product_key'))
     warehouse_key = db.Column(db.Integer, db.ForeignKey('warehouse_dimension.warehouse_key'))
     vendor_key = db.Column(db.Integer, db.ForeignKey('vendor_dimension.vendor_key'))
