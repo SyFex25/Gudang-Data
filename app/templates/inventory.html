@@ -60,7 +60,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="saveDateBtn">Simpan</button>
+                <button type="button" class="btn btn-warning" id="saveDateBtn">Simpan</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
             </div>
         </div>
@@ -76,16 +76,13 @@
     $(document).ready(function () {
         $('button.next-btn').on('click', function () {
             var row = $(this).closest('tr');
-    
             var columns = row.find('td');
-    
             var currentColIndex = row.data('currentColIndex') || 0;
-    
             var currentColValue = $(columns[currentColIndex]).text().trim();
-    
+
             if (currentColValue === '0') {
                 $('#dateModal').modal('show');
-    
+
                 $('#saveDateBtn').off('click').on('click', function () {
                     var selectedDate = $('#datepicker').val();
 
@@ -99,9 +96,20 @@
                             success: function (data) {
                                 console.log('Server Response:', data);
 
-                                alert('Converted Date Key: ' + data.dateKey);
+                                var columnName = $(columns[currentColIndex]).closest('table').find('th').eq(currentColIndex).text().trim();
 
-                                $(columns[currentColIndex]).text(data.dateKey);
+                                switch (columnName) {
+                                    case 'Date Inspected Key':
+                                        $(columns[currentColIndex]).text(data.dateKey); // Data ke kolom date_inspected_key
+                                        break;
+                                    case 'Date Bin Placement Key':
+                                        $(columns[currentColIndex]).text(data.dateKey); // Data ke kolom date_bin_placement_key
+                                        break;
+                                    // Tambahkan case untuk kolom lain jika perlu
+                                    default:
+                                        break;
+                                }
+
                                 moveToNextColumn(row, columns);
                                 $('#dateModal').modal('hide');
                             },
@@ -113,25 +121,25 @@
                         alert('Tanggal harus diisi!');
                     }
                 });
-                } else {
+            } else {
                 moveToNextColumn(row, columns);
             }
         });
-    
+
         function moveToNextColumn(row, columns) {
             var currentColIndex = row.data('currentColIndex') || 0;
-    
-            columns.removeClass('bg-success');
-    
+
+            columns.removeClass('bg-warning-subtle');
+
             currentColIndex++;
-    
+
             if (currentColIndex >= columns.length - 1) {
                 row.off('click', 'button.next-btn');
                 return;
             }
-    
-            $(columns[currentColIndex]).addClass('bg-success');
-    
+
+            $(columns[currentColIndex]).addClass('bg-warning-subtle');
+
             row.data('currentColIndex', currentColIndex);
         }
     });

@@ -135,6 +135,7 @@ class HistoricRetailInventorySnapshotFact(db.Model):
     snapshot_key = db.Column(db.Integer, primary_key=True, autoincrement=True)
     date_key = db.Column(db.Integer, db.ForeignKey('date_dimension.date_key'), index=True, nullable=False)
     product_key = db.Column(db.String(5), db.ForeignKey('product_dimension.product_key'))
+    store_key = db.Column(db.Integer, db.ForeignKey('store_dimension.store_key'), index=True, nullable=False)
     quantity_on_hand = db.Column(db.Integer)
 
 class InventoryReceiptAccumulatingFact(db.Model):
