@@ -252,52 +252,38 @@ def snapshot_simulation():
 @app.route('/move_snapshot', methods=['POST'])
 def move_snapshot():
     if request.method == 'POST':
-        # Get current date
         current_date = datetime.now().date()
 
-        # Get all rows from RetailInventorySnapshotFacts
         retail_snapshots = RetailInventorySnapshotFacts.query.all()
-        # Get distinct store keys from RetailInventorySnapshotFacts
         distinct_store_keys = db.session.query(RetailInventorySnapshotFacts.store_key).distinct().all()
         unique_store_keys = [key[0] for key in distinct_store_keys]
-        # Create a session
         session = db.session
 
-        # Iterate through each snapshot
         for snapshot in retail_snapshots:
-            # Get date from DateDimension based on date_key
             date_dimension_entry = DateDimension.query.filter_by(date_key=snapshot.date_key).first()
 
             if date_dimension_entry:
-                # Calculate the difference in days between current date and the snapshot's date
                 date_difference = (current_date - date_dimension_entry.date).days
 
-                # Check if the snapshot's date is older than 30 days from the current date
                 if date_difference > 1:
-                    # Check if the product_key exists in ProductDimension
                     product_dimension_entry = ProductDimension.query.filter_by(product_key=snapshot.product_key).first()
                     
                     if product_dimension_entry:
-                        # Calculate average quantity_on_hand for a certain product on a certain day across stores
                         avg_quantity_on_hand = db.session.query(func.sum(RetailInventorySnapshotFacts.quantity_on_hand) / len(unique_store_keys)) \
                             .filter(RetailInventorySnapshotFacts.product_key == snapshot.product_key) \
                             .filter(RetailInventorySnapshotFacts.date_key == snapshot.date_key) \
                             .scalar()
 
                         if avg_quantity_on_hand is not None:
-                            # Insert into HistoricRetailInventorySnapshotFact with average quantity_on_hand
                             historic_snapshot = HistoricRetailInventorySnapshotFact(
                                 date_key=snapshot.date_key,
                                 product_key=snapshot.product_key,
                                 quantity_on_hand=avg_quantity_on_hand
-                                # Add other fields as necessary
                             )
                             session.add(historic_snapshot)
 
-                        # Delete the snapshot data from RetailInventorySnapshotFacts
                         session.delete(snapshot)
 
-        # Commit changes after all operations
         session.commit()
 
         return jsonify({'message': 'Snapshot data moved to historic table as per criteria'}), 200
@@ -318,7 +304,6 @@ def display_snapshot_historic():
 @app.route('/move_to_retail_snapshot', methods=['POST'])
 def move_to_retail_snapshot():
     if request.method == 'POST':
-        # Move all data from HistoricRetailInventorySnapshotFact back to RetailInventorySnapshotFacts
         historic_snapshots = HistoricRetailInventorySnapshotFact.query.all()
 
         for snapshot in historic_snapshots:
@@ -329,7 +314,7 @@ def move_to_retail_snapshot():
                 quantity_on_hand=snapshot.quantity_on_hand
             )
             db.session.add(retail_snapshot)
-            db.session.delete(snapshot)  # Delete from Historic table after moving
+            db.session.delete(snapshot)  
             db.session.commit()
 
         return jsonify({'message': 'Data moved back to RetailInventorySnapshotFacts'}), 200
@@ -387,9 +372,9 @@ def get_holiday_dates():
 @app.route('/convert_date', methods=['POST'])
 def convert_date():
     selected_date = request.json.get('date')
-    column_name = request.json.get('columnName')  # Mengambil nama kolom dari permintaan
+    column_name = request.json.get('columnName')
 
-    print(f"Selected Date: {selected_date}, Column Name: {column_name}")  # Debugging
+    print(f"Selected Date: {selected_date}, Column Name: {column_name}")
 
     valid_column_names = {
         'date inspected key': 'date_inspected_key',
@@ -402,29 +387,29 @@ def convert_date():
         if date_entry:
             date_key = date_entry.date_key
 
-            print(f"Date Key found: {date_key}")  # Debugging
+            print(f"Date Key found: {date_key}")
 
             matching_columns = [v for k, v in valid_column_names.items() if k.lower() in column_name.lower()]
             if matching_columns:
                 column_to_update = matching_columns[0]
-                setattr(InventoryReceiptAccumulatingFact, column_to_update, date_key)
+
+                entry_to_update = InventoryReceiptAccumulatingFact.query.first()
+
+                setattr(entry_to_update, column_to_update, date_key)
 
                 db.session.commit()
-                print("Data successfully added to the database.")  # Debugging
 
+                print("Data successfully added to the database.")
                 return jsonify({'dateKey': date_key, 'success': True})
             else:
-                print("Invalid column name.")  # Debugging
+                print("Invalid column name.")
                 return jsonify({'error': 'Invalid column name'}), 400
         else:
-            print("Date not found in DateDimension table.")  # Debugging
+            print("Date not found in DateDimension table.")
             return jsonify({'error': 'Date not found in DateDimension table'}), 404
     else:
-        print("Invalid date or column name parameter.")  # Debugging
+        print("Invalid date or column name parameter.")
         return jsonify({'error': 'Invalid date or column name parameter'}), 400
-
-
-
 @app.route('/get_inventory_data')
 def get_inventory_data():
     product_key = request.args.get('product_key')
@@ -451,12 +436,12 @@ def get_inventory_data():
     results = query.all()
     date_keys = [result[0] for result in results]
     quantity_on_hand = [result[1] for result in results]
-    dates = [result[2].strftime('%Y-%m-%d') for result in results]  # Mengambil tanggal dan memformatnya
+    dates = [result[2].strftime('%Y-%m-%d') for result in results]  
 
     data = {
         "date_keys": date_keys,
         "quantity_on_hand": quantity_on_hand,
-        "dates": dates  # Menambahkan data tanggal ke dalam respons
+        "dates": dates  
     }
     # print(data)
     return jsonify(data)
