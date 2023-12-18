@@ -14,8 +14,10 @@ from datetime import date, timedelta, datetime
 from models import *
 from sqlalchemy import desc
 from flask import jsonify
+from sqlalchemy import func
 from collections import defaultdict
 import uuid
+
 
 app = Flask(__name__)
 
@@ -186,22 +188,24 @@ def gross_margin_data():
     # Query data margin sesuai dengan produk dan rentang tanggal
     query = db.session.query(
         StoreDimension.store_key,
+        StoreDimension.store_name,
         func.sum(RetailSalesFact.extended_gross_profit_dollar_amount).label('total_profit'),
         func.sum(RetailSalesFact.extended_sales_dollar_amount).label('total_sales')
     ).join(StoreDimension, RetailSalesFact.store_key == StoreDimension.store_key).filter(
         RetailSalesFact.product_key == product_key,
         RetailSalesFact.date_key >= start_date,
         RetailSalesFact.date_key <= end_date
-    ).group_by(StoreDimension.store_key)
+    ).group_by(StoreDimension.store_key, StoreDimension.store_name)
 
     results = query.all()
 
     store_keys = [result[0] for result in results]
-    gross_margin_values = [(result[1] / result[2] * 100) if result[2] else 0 for result in results]
-
+    store_names = [result[1] for result in results]
+    gross_margin_values = [(result[2] / result[3] * 100) if result[3] else 0 for result in results]
 
     data = {
         "store_keys": store_keys,
+        "store_names": store_names,
         "gross_margin_values": gross_margin_values
     }
 
@@ -219,21 +223,21 @@ def gross_profit_data():
 
     query = db.session.query(
         StoreDimension.store_key,
+        StoreDimension.store_name, 
         (RetailSalesFact.extended_gross_profit_dollar_amount).label('total_profit')
     ).join(StoreDimension, RetailSalesFact.store_key == StoreDimension.store_key).filter(
         RetailSalesFact.product_key == product_key,
         RetailSalesFact.date_key >= start_date,
         RetailSalesFact.date_key <= end_date
-    ).group_by(StoreDimension.store_key)
+    ).group_by(StoreDimension.store_key, StoreDimension.store_name)
 
     results = query.all()
 
-    store_keys = [result[0] for result in results]
-    gross_profit_values = [(result[1]) for result in results]
-    print('Gross Profit', gross_profit_values)
+    store_names = [result.store_name for result in results] 
+    gross_profit_values = [result.total_profit for result in results]
 
     data = {
-        "store_keys": store_keys,
+        "store_names": store_names,
         "gross_profit_values": gross_profit_values
     }
 
@@ -345,22 +349,27 @@ def promotion_data():
     product_key = request.args.get('product_key')
     promotion_name = request.args.get('promotion_name')
 
-    # Query data margin sesuai dengan produk dan rentang tanggal
+    # Query data sesuai dengan produk, promosi, dan rentang tanggal
     query = db.session.query(
         RetailSalesFact.store_key,
-        (RetailSalesFact.extended_gross_profit_dollar_amount).label('total_profit')
-    ).join(PromotionDimension, RetailSalesFact.promotion_key == PromotionDimension.promotion_key).filter(
-        RetailSalesFact.product_key == product_key, PromotionDimension.promotion_name == promotion_name
-    ).group_by(RetailSalesFact.store_key)
+        StoreDimension.store_name,
+        func.sum(RetailSalesFact.extended_gross_profit_dollar_amount).label('total_profit')
+    ).join(PromotionDimension, RetailSalesFact.promotion_key == PromotionDimension.promotion_key) \
+     .join(StoreDimension, RetailSalesFact.store_key == StoreDimension.store_key) \
+     .filter(
+        RetailSalesFact.product_key == product_key,
+        PromotionDimension.promotion_name == promotion_name
+    ).group_by(RetailSalesFact.store_key, StoreDimension.store_name)
 
     results = query.all()
-    print(results)
 
     store_keys = [result[0] for result in results]
-    promotion_values = [(result[1]) for result in results]
+    store_names = [result[1] for result in results]
+    promotion_values = [result[2] for result in results]
 
     data = {
-        "store_keys": store_keys,   
+        "store_keys": store_keys,
+        "store_names": store_names,
         "promotion_values": promotion_values
     }
 
@@ -391,8 +400,118 @@ def convert_date():
 
         if date_entry:
             date_key = date_entry.date_key
-            return jsonify({'dateKey': date_key})
+
+            # Menentukan nama kolom pada basis data berdasarkan nama kolom pada aplikasi
+            column_name = request.json.get('columnName')
+
+            if column_name == 'Date Inspected Key':
+                # Masukkan dateKey ke kolom date_inspected_key di tabel inventory_receipt_accumulating_fact
+                new_entry = InventoryReceiptAccumulatingFact(date_inspected_key=date_key)
+            elif column_name == 'Date Bin Placement Key':
+                # Masukkan dateKey ke kolom date_bin_placement_key di tabel inventory_receipt_accumulating_fact
+                new_entry = InventoryReceiptAccumulatingFact(date_bin_placement_key=date_key)
+            else:
+                return jsonify({'error': 'Invalid column name'}), 400
+
+            db.session.add(new_entry)
+            db.session.commit()
+
+            return jsonify({'dateKey': date_key, 'success': True})  # Memberikan respons berhasil
         else:
             return jsonify({'error': 'Date not found in DateDimension table'}), 404
     else:
         return jsonify({'error': 'Invalid date parameter'}), 400
+
+@app.route('/get_inventory_data')
+def get_inventory_data():
+    product_key = request.args.get('product_key')
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    store_key = request.args.get('store_key')
+   
+    # Konversi tanggal dari format "YYYY-MM-DD" ke "YYYYMMDD" integer
+    start_date = int(start_date.replace("-", ""))
+    end_date = int(end_date.replace("-", ""))
+    print(start_date,end_date,product_key,store_key)
+    
+    query = db.session.query(
+        HistoricRetailInventorySnapshotFact.date_key,
+        HistoricRetailInventorySnapshotFact.quantity_on_hand
+    ).filter(
+        HistoricRetailInventorySnapshotFact.product_key == product_key,
+        HistoricRetailInventorySnapshotFact.date_key >= start_date,
+        HistoricRetailInventorySnapshotFact.date_key <= end_date,
+        HistoricRetailInventorySnapshotFact.store_key == store_key
+    )
+
+    results = query.all()
+    date_keys = [(result[0]) for result in results]
+    quantity_on_hand = [result[1] for result in results]
+    # print('Gross Profit', gross_profit_values)
+
+    data = {
+        "date_keys": date_keys,
+        "quantity_on_hand": quantity_on_hand
+    }
+    # print(data)
+    return jsonify(data)
+
+@app.route('/total_sales_data')
+def get_total_sales_data():
+    product_key = request.args.get('product_key')
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+
+    start_date = int(start_date.replace("-", ""))
+    end_date = int(end_date.replace("-", ""))
+    
+    query = db.session.query(
+        StoreDimension.store_name,  
+        func.sum(RetailSalesFact.extended_sales_dollar_amount).label('total_sales')
+    ).join(StoreDimension, RetailSalesFact.store_key == StoreDimension.store_key).filter(
+        (RetailSalesFact.product_key == product_key) &
+        (RetailSalesFact.date_key >= start_date) &
+        (RetailSalesFact.date_key <= end_date)
+    ).group_by(StoreDimension.store_name)  
+
+    results = query.all()
+
+    store_names = [result[0] for result in results]
+    total_sales_values = [result[1] for result in results]
+
+    data = {
+        "store_names": store_names,
+        "total_sales_values": total_sales_values
+    }
+
+    return jsonify(data)
+
+@app.route('/total_sales_qty_data')
+def get_total_sales_qty_data():
+    product_key = request.args.get('product_key')
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+
+    start_date = int(start_date.replace("-", ""))
+    end_date = int(end_date.replace("-", ""))
+    
+    query = db.session.query(
+        StoreDimension.store_name,  
+        func.sum(RetailSalesFact.sales_quantity).label('total_sales_qty')
+    ).join(StoreDimension, RetailSalesFact.store_key == StoreDimension.store_key).filter(
+        (RetailSalesFact.product_key == product_key) &
+        (RetailSalesFact.date_key >= start_date) &
+        (RetailSalesFact.date_key <= end_date)
+    ).group_by(StoreDimension.store_name)  
+
+    results = query.all()
+
+    store_names = [result[0] for result in results]
+    total_sales_qty_values = [result[1] for result in results]
+
+    data = {
+        "store_names": store_names,
+        "total_sales_qty_values": total_sales_qty_values
+    }
+
+    return jsonify(data)

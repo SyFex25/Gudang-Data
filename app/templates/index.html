@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% block body %}
+{% block body %} 
 <div class="inner m-5">
     <h2 class="text-center pb-3 text-primary">Chart</h2>
     <div class="row">
@@ -7,7 +7,7 @@
             <div class="card h-100">
                 <div class="card-header">
                     <span class="me-2"><i class="bi bi-bar-chart-fill"></i></span>
-                    Gross Profit
+                    Gross Profit (Derived Fact)
                 </div>
                 <div class="card-body">
                     <canvas id="grossProfitChart" width="400" height="200"></canvas>
@@ -39,7 +39,7 @@
             <div class="card h-100">
                 <div class="card-header">
                     <span class="me-2"><i class="bi bi-bar-chart-fill"></i></span>
-                    Gross Margin
+                    Gross Margin (Non-Additive)
                 </div>
                 <div class="card-body">
                     <canvas id="grossMarginChart" width="400" height="200"></canvas>
@@ -67,6 +67,8 @@
             </div>
         </div>
     </div>
+    <div class="row">
+
     <div class="col-md-6 mb-3">
         <div class="card h-100">
             <div class="card-header">
@@ -102,6 +104,117 @@
             </div>
         </div>
     </div>
+
+    <div class="col-md-6 mb-3">
+        <div class="card h-100">
+            <div class="card-header">
+                <span class="me-2"><i class="bi bi-bar-chart-fill"></i></span>
+                Inventory Stock Trendline (Semi Additive)
+            </div>
+            <div class="card-body">
+                <canvas id="inventoryStockChart" width="400" height="200"></canvas>
+                <!-- Dropdown filter -->
+                <div class="filter d-flex">
+                  <div class="dropdown mt-3 me-2">
+                      <button class="btn btn-light dropdown-toggle" id="stock_button"type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                          Product
+                      </button>
+                      <ul class="dropdown-menu">
+                          {% for product in product_dimension %}
+                          <li><a class="dropdown-item" href="#" onclick="selectProduct('{{ product.product_key }}', '{{ product.product_description }}', 'inventory')">{{ product.product_description }}</a></li>
+                          {% endfor %}
+                      </ul>
+                  </div>
+                  <div class="dropdown mt-3 me-2">
+                      <button class="btn btn-light dropdown-toggle" id="store_button"type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                          Store
+                      </button>
+                      <ul class="dropdown-menu">
+                          {% for store in store_dimension %}
+                          <li><a class="dropdown-item" href="#" onclick="selectStore('{{ store.store_key }}', '{{ store.store_name }}')">{{ store.store_name }}</a></li>
+                          {% endfor %}
+                      </ul>
+                  </div>
+                  <div class="col mt-3 me-2" id="start-date">
+                      <input type="date" class="form-control" id="startDateI">
+                  </div>
+                  <div class="col mt-3 me-2" id="end-date">
+                      <input type="date" class="form-control" id="endDateI">
+                  </div>
+                  <button class="btn btn-primary mt-3" onclick="updateInventoryStockChart()">Update</button>
+              </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <div class="card h-100">
+                <div class="card-header">
+                    <span class="me-2"><i class="bi bi-bar-chart-fill"></i></span>
+                        Total Sales Dollar Amount (Additive)
+                </div>
+                <div class="card-body">
+                    <canvas id="totalSalesChart" width="400" height="200"></canvas>
+                    <!-- Dropdown filter -->
+                    <div class="filter d-flex">
+                      <div class="dropdown mt-3 me-2">
+                          <button class="btn btn-light dropdown-toggle" id="sales_button"type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                              Product
+                          </button>
+                          <ul class="dropdown-menu">
+                              {% for product in product_dimension %}
+                              <li><a class="dropdown-item" href="#" onclick="selectProduct('{{ product.product_key }}', '{{ product.product_description }}', 'sales')">{{ product.product_description }}</a></li>
+                              {% endfor %}
+                          </ul>
+                      </div>
+                      <div class="col mt-3 me-2" id="start-date">
+                          <input type="date" class="form-control" id="startDateS">
+                      </div>
+                      <div class="col mt-3 me-2" id="end-date">
+                          <input type="date" class="form-control" id="endDateS">
+                      </div>
+                      <button class="btn btn-primary mt-3" onclick="updateTotalSalesChart()">Update</button>
+                  </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <div class="card h-100">
+                <div class="card-header">
+                    <span class="me-2"><i class="bi bi-bar-chart-fill"></i></span>
+                    Total Sales Quantities (Additive)
+                </div>
+                <div class="card-body">
+                    <canvas id="totalSalesQtyChart" width="400" height="200"></canvas>
+                    <!-- Dropdown filter -->
+                    <div class="filter d-flex">
+                        <div class="dropdown mt-3 me-2">
+                            <button class="btn btn-light dropdown-toggle" id="sales_qty_button" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Product
+                            </button>
+                            <ul class="dropdown-menu">
+                                {% for product in product_dimension %}
+                                <li><a class="dropdown-item" href="#" onclick="selectProduct('{{ product.product_key }}', '{{ product.product_description }}', 'salesqty')">{{ product.product_description }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="col mt-3 me-2" id="start-date">
+                            <input type="date" class="form-control" id="startDateSQ">
+                        </div>
+                        <div class="col mt-3 me-2" id="end-date">
+                            <input type="date" class="form-control" id="endDateSQ">
+                        </div>
+                        <button class="btn btn-primary mt-3" onclick="updateTotalSalesQtyChart()">Update</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+ 
+</div>
 </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.0.2/dist/chart.min.js"></script>
@@ -128,6 +241,25 @@
           selectedProductDescriptionPro = productDescription;
           document.querySelector('#promotion_button').innerHTML = `${selectedProductDescriptionPro}`;
         }
+        
+        else if (type === "inventory"){
+          selectedProductKeyInv = productKey;
+          selectedProductDescriptionInv = productDescription;
+          document.querySelector('#stock_button').innerHTML = `${selectedProductDescriptionInv}`;
+        }
+
+        else if (type === "sales"){
+          selectedProductKeySales = productKey;
+          selectedProductDescriptionSales = productDescription;
+          document.querySelector('#sales_button').innerHTML = `${selectedProductDescriptionSales}`;
+        }
+
+        else if (type === "salesqty"){
+          selectedProductKeySalesQty = productKey;
+          selectedProductDescriptionSalesQty = productDescription;
+          document.querySelector('#sales_qty_button').innerHTML = `${selectedProductDescriptionSalesQty}`;
+        }
+
     }
 
     function SelectPromotion(p_name, p_id) {
@@ -137,6 +269,11 @@
 
         }
        
+    function selectStore(store_id,store_name){
+        storeKey = store_id
+        document.querySelector('#store_button').innerHTML = `${store_name}`;
+    }
+        
     const grossMarginChart = new Chart(document.getElementById('grossMarginChart'), {
         type: 'bar',
         data: {
@@ -177,9 +314,10 @@
                 .then(response => response.json())
                 .then(data => {
                     const storeKeys = data.store_keys;
+                    const storeNames = data.store_names;
                     const grossMarginValues = data.gross_margin_values;
 
-                    grossMarginChart.data.labels = storeKeys;
+                    grossMarginChart.data.labels = storeNames;
                     grossMarginChart.data.datasets[0].data = grossMarginValues;
                     grossMarginChart.update();
                 });
@@ -187,6 +325,7 @@
             alert("Please select a product, start date, and end date.");
         }
     }
+
 
     const grossProfitChart = new Chart(document.getElementById('grossProfitChart'), {
         type: 'bar',
@@ -219,7 +358,7 @@
         }
     });
 
-     function updateGrossProfitChart() {
+    function updateGrossProfitChart() {
         const startDate = document.getElementById("startDate").value;
         const endDate = document.getElementById("endDate").value;
 
@@ -227,10 +366,10 @@
             fetch(`/gross_profit_data?product_key=${selectedProductKeyP}&start_date=${startDate}&end_date=${endDate}`)
                 .then(response => response.json())
                 .then(data => {
-                    const storeKeys = data.store_keys;
+                    const storeNames = data.store_names;
                     const grossProfitValues = data.gross_profit_values;
-                    
-                    grossProfitChart.data.labels = storeKeys;
+
+                    grossProfitChart.data.labels = storeNames;
                     grossProfitChart.data.datasets[0].data = grossProfitValues;
                     grossProfitChart.update();
                 });
@@ -238,6 +377,7 @@
             alert("Please select a product, start date, and end date.");
         }
     }
+
 
     const PromotionChart = new Chart(document.getElementById('Promotion'), {
         type: 'bar',
@@ -277,18 +417,174 @@
             fetch(`/promotion_data?product_key=${selectedProductKeyPro}&promotion_name=${promotion_name}`)
                 .then(response => response.json())
                 .then(data => {
-                    const storeKeys = data.store_keys;
+                    const storeNames = data.store_names; // Mengambil store_names dari respons JSON
                     const promotion_values = data.promotion_values;
                     console.log("promotion values = ", promotion_values)
-                    console.log("Works", storeKeys)
-        
-                    PromotionChart.data.labels = storeKeys;
+                    console.log("Works", storeNames)
+
+                    PromotionChart.data.labels = storeNames; // Menggunakan storeNames untuk label di chart
                     PromotionChart.data.datasets[0].data = promotion_values;
                     PromotionChart.update();
+                });
+        } else {
+            alert("Please select a product and promotion.");
+        }
+    }
+
+    const inventoryStockChart = new Chart(document.getElementById('inventoryStockChart'), {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Quantity on Hand',
+                data: [],
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Quantity on Hand'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                }
+            }
+        }
+    });
+    function updateInventoryStockChart() {
+        const startDate = document.getElementById("startDateI").value;
+        const endDate = document.getElementById("endDateI").value;
+        if (selectedProductKeyInv && startDate && endDate && storeKey) {
+            fetch(`/get_inventory_data?product_key=${selectedProductKeyInv}&start_date=${startDate}&end_date=${endDate}&store_key=${storeKey}`)
+                .then(response => response.json())
+                .then(data => {
+                    const dateKeys = data.date_keys;
+                    const quantity_on_hand = data.quantity_on_hand;
+                    inventoryStockChart.data.labels = dateKeys;
+                    inventoryStockChart.data.datasets[0].data = quantity_on_hand;
+                    inventoryStockChart.update();
+                });
+        } else {
+            alert("Please select a product, start date, end date and store.");
+        }
+    }
+
+    const totalSalesChart = new Chart(document.getElementById('totalSalesChart'), {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Total Sales',
+                data: [],
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Total Sales'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Store'
+                    }
+                }
+            }
+        }
+    });
+    function updateTotalSalesChart() {
+        const startDate = document.getElementById("startDateS").value;
+        const endDate = document.getElementById("endDateS").value;
+
+        if (selectedProductKeySales && startDate && endDate) {
+            fetch(`/total_sales_data?product_key=${selectedProductKeySales}&start_date=${startDate}&end_date=${endDate}`)
+                .then(response => response.json())
+                .then(data => {
+                    const storeNames = data.store_names;  
+                    const totalSalesValues = data.total_sales_values; 
+
+                    totalSalesChart.data.labels = storeNames;  
+                    totalSalesChart.data.datasets[0].data = totalSalesValues;
+                    totalSalesChart.update();
+                })
+                .catch(error => {
+                    console.error("Error fetching data:", error);
                 });
         } else {
             alert("Please select a product, start date, and end date.");
         }
     }
+
+    const totalSalesQtyChart = new Chart(document.getElementById('totalSalesQtyChart'), {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Total Sales Quantities',
+                data: [],
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Total Sales Quantities'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Store'
+                    }
+                }
+            }
+        }
+    });
+
+    function updateTotalSalesQtyChart() {
+        const startDate = document.getElementById("startDateSQ").value;
+        const endDate = document.getElementById("endDateSQ").value;
+
+        if (selectedProductKeySalesQty && startDate && endDate) {
+            fetch(`/total_sales_qty_data?product_key=${selectedProductKeySalesQty}&start_date=${startDate}&end_date=${endDate}`)
+                .then(response => response.json())
+                .then(data => {
+                    const storeNames = data.store_names;
+                    const totalSalesQtyValues = data.total_sales_qty_values;
+
+                    totalSalesQtyChart.data.labels = storeNames;
+                    totalSalesQtyChart.data.datasets[0].data = totalSalesQtyValues;
+                    totalSalesQtyChart.update();
+                })
+                .catch(error => {
+                    console.error("Error fetching data:", error);
+                });
+        } else {
+            alert("Please select a product, start date, and end date.");
+        }
+    }
+
 </script>
 {% endblock %}
