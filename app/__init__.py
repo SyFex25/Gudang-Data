@@ -372,10 +372,6 @@ def promotion_data():
 
     return jsonify(data)
 
-@app.route('/semi_additive_data')
-def semi_additive():
-    pass
-
 def generate_unique_cashier_key():
     unique_code = str(uuid.uuid4().int)[:3]
     cashier_key = f"CASHIER{unique_code}"
@@ -391,33 +387,43 @@ def get_holiday_dates():
 @app.route('/convert_date', methods=['POST'])
 def convert_date():
     selected_date = request.json.get('date')
-    
-    if selected_date:
+    column_name = request.json.get('columnName')  # Mengambil nama kolom dari permintaan
+
+    print(f"Selected Date: {selected_date}, Column Name: {column_name}")  # Debugging
+
+    valid_column_names = {
+        'date inspected key': 'date_inspected_key',
+        'date bin placement key': 'date_bin_placement_key'
+    }
+
+    if selected_date and column_name:
         date_entry = DateDimension.query.filter_by(date=selected_date).first()
 
         if date_entry:
             date_key = date_entry.date_key
 
-            # Menentukan nama kolom pada basis data berdasarkan nama kolom pada aplikasi
-            column_name = request.json.get('columnName')
+            print(f"Date Key found: {date_key}")  # Debugging
 
-            if column_name == 'Date Inspected Key':
-                # Masukkan dateKey ke kolom date_inspected_key di tabel inventory_receipt_accumulating_fact
-                new_entry = InventoryReceiptAccumulatingFact(date_inspected_key=date_key)
-            elif column_name == 'Date Bin Placement Key':
-                # Masukkan dateKey ke kolom date_bin_placement_key di tabel inventory_receipt_accumulating_fact
-                new_entry = InventoryReceiptAccumulatingFact(date_bin_placement_key=date_key)
+            matching_columns = [v for k, v in valid_column_names.items() if k.lower() in column_name.lower()]
+            if matching_columns:
+                column_to_update = matching_columns[0]
+                setattr(InventoryReceiptAccumulatingFact, column_to_update, date_key)
+
+                db.session.commit()
+                print("Data successfully added to the database.")  # Debugging
+
+                return jsonify({'dateKey': date_key, 'success': True})
             else:
+                print("Invalid column name.")  # Debugging
                 return jsonify({'error': 'Invalid column name'}), 400
-
-            db.session.add(new_entry)
-            db.session.commit()
-
-            return jsonify({'dateKey': date_key, 'success': True})  # Memberikan respons berhasil
         else:
+            print("Date not found in DateDimension table.")  # Debugging
             return jsonify({'error': 'Date not found in DateDimension table'}), 404
     else:
-        return jsonify({'error': 'Invalid date parameter'}), 400
+        print("Invalid date or column name parameter.")  # Debugging
+        return jsonify({'error': 'Invalid date or column name parameter'}), 400
+
+
 
 @app.route('/get_inventory_data')
 def get_inventory_data():
