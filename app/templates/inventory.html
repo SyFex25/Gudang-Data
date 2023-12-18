@@ -2,12 +2,9 @@
 {% block body %}
 <div class="inner m-5">
     <h2 class="text-center pb-3 text-primary">Inventory</h2>
-    <div class="container-sm bg-light rounded p-3 mb-3" style="min-height: 300px;">
+    <div class="container-sm bg-light rounded p-3 mb-3" style="min-height: 200px;">
         <h4 class="text-center pt-5">Simulasi Perpindahan Inventory</h4>
-        <h6 class="text-center">Silakan tekan button di bawah ini untuk melakukan simulasi</h6>
-        <div class="d-flex justify-content-center mt-5">
-            <a href="/inventory-simulation"><button type="button" class="btn btn-warning">Mulai!</button></a>
-        </div> 
+        <h6 class="text-center">Di bawah ini akan ditunjukkan demo untuk Inventory</h6>
     </div>
     <h4 class="text-center">Inventory Table</h4>  
     <div class="overflow-x-auto">
@@ -73,76 +70,75 @@
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 
 <script>
-    $(document).ready(function () {
-        $('button.next-btn').on('click', function () {
-            var row = $(this).closest('tr');
-            var columns = row.find('td');
-            var currentColIndex = row.data('currentColIndex') || 0;
-            var currentColValue = $(columns[currentColIndex]).text().trim();
+$(document).ready(function () {
+    $('button.next-btn').on('click', function () {
+        var row = $(this).closest('tr');
+        var columns = row.find('td');
+        var currentColIndex = row.data('currentColIndex') || 0;
+        var currentColValue = $(columns[currentColIndex]).text().trim();
 
-            if (currentColValue === '0') {
-                $('#dateModal').modal('show');
+        if (currentColValue === '0') {
+            $('#dateModal').modal('show');
 
-                $('#saveDateBtn').off('click').on('click', function () {
-                    var selectedDate = $('#datepicker').val();
+            $('#saveDateBtn').off('click').on('click', function () {
+                var selectedDate = $('#datepicker').val();
+                var columnName = $(columns[currentColIndex]).closest('table').find('th').eq(currentColIndex).text().trim(); // Ambil nama kolom dari judul tabel
 
-                    if (selectedDate) {
-                        $.ajax({
-                            url: '/convert_date',
-                            method: 'POST',
-                            contentType: 'application/json',
-                            data: JSON.stringify({ date: selectedDate }),
-                            dataType: 'json',
-                            success: function (data) {
-                                console.log('Server Response:', data);
+                if (selectedDate) {
+                    $.ajax({
+                        url: '/convert_date',
+                        method: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ date: selectedDate, columnName: columnName }),
+                        dataType: 'json',
+                        success: function (data) {
+                            console.log('Server Response:', data);
 
-                                var columnName = $(columns[currentColIndex]).closest('table').find('th').eq(currentColIndex).text().trim();
-
-                                switch (columnName) {
-                                    case 'Date Inspected Key':
-                                        $(columns[currentColIndex]).text(data.dateKey); // Data ke kolom date_inspected_key
-                                        break;
-                                    case 'Date Bin Placement Key':
-                                        $(columns[currentColIndex]).text(data.dateKey); // Data ke kolom date_bin_placement_key
-                                        break;
-                                    // Tambahkan case untuk kolom lain jika perlu
-                                    default:
-                                        break;
-                                }
-
+                            if (data.success) {
+                                $(columns[currentColIndex]).text(data.dateKey);
                                 moveToNextColumn(row, columns);
                                 $('#dateModal').modal('hide');
-                            },
-                            error: function () {
+                            } else {
                                 alert('Failed to convert date.');
                             }
-                        });
-                    } else {
-                        alert('Tanggal harus diisi!');
-                    }
-                });
-            } else {
-                moveToNextColumn(row, columns);
-            }
-        });
-
-        function moveToNextColumn(row, columns) {
-            var currentColIndex = row.data('currentColIndex') || 0;
-
-            columns.removeClass('bg-warning-subtle');
-
-            currentColIndex++;
-
-            if (currentColIndex >= columns.length - 1) {
-                row.off('click', 'button.next-btn');
-                return;
-            }
-
-            $(columns[currentColIndex]).addClass('bg-warning-subtle');
-
-            row.data('currentColIndex', currentColIndex);
+                        },
+                        error: function () {
+                            alert('Failed to convert date.');
+                        }
+                    });
+                } else {
+                    alert('Tanggal harus diisi!');
+                }
+            });
+        } else {
+            moveToNextColumn(row, columns);
         }
     });
+    function moveToNextColumn(row, columns) {
+        var currentColIndex = row.data('currentColIndex') || 0;
+
+        columns.removeClass('bg-warning-subtle');
+
+        currentColIndex++;
+
+        if (currentColIndex >= columns.length - 1) {
+            row.off('click', 'button.next-btn');
+            return;
+        }
+
+        $(columns[currentColIndex]).addClass('bg-warning-subtle');
+
+        row.data('currentColIndex', currentColIndex);
+    }
+
+    $('#dateModal').on('hidden.bs.modal', function () {
+        var row = $('tr[data-current-col-index]');
+        var columns = row.find('td');
+        moveToNextColumn(row, columns);
+        $('#dateModal').modal('hide');
+    });
+});
+
 </script>
 
 {% endblock %}

@@ -14,5 +14,9 @@ Database kami mencakup 3 Fact Table, yakni:
 - Warehouse Inventory Transaction Fact
 beserta beberapa tabel pendukung di dalamnya seperti store dimension, date dimension, product dimension, dll
 
+### Preparasi
+Sebelum menjalankan kodenya, silakan buat env dan download semua requirements yang diperlukan dengan menjalankan kode berikut
+conda create --name <env> --file requirements.yml  
+
 ### Simulasi
 Akan didemokan ketika presentasi
