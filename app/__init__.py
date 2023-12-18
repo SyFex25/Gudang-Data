@@ -301,10 +301,8 @@ def move_snapshot():
         session.commit()
 
         return jsonify({'message': 'Snapshot data moved to historic table as per criteria'}), 200
-
     else:
         return jsonify({'message': 'Method not allowed'}), 405
-
 
 
 @app.route('/inventory')
@@ -329,7 +327,6 @@ def move_to_retail_snapshot():
                 product_key=snapshot.product_key,
                 store_key=snapshot.store_key,
                 quantity_on_hand=snapshot.quantity_on_hand
-                # Add other fields as necessary
             )
             db.session.add(retail_snapshot)
             db.session.delete(snapshot)  # Delete from Historic table after moving
@@ -428,30 +425,32 @@ def get_inventory_data():
     start_date = request.args.get('start_date')
     end_date = request.args.get('end_date')
     store_key = request.args.get('store_key')
-   
+    
     # Konversi tanggal dari format "YYYY-MM-DD" ke "YYYYMMDD" integer
-    start_date = int(start_date.replace("-", ""))
-    end_date = int(end_date.replace("-", ""))
-    print(start_date,end_date,product_key,store_key)
+    start_date_int = int(start_date.replace("-", ""))
+    end_date_int = int(end_date.replace("-", ""))
+    print(start_date_int, end_date_int, product_key, store_key)
     
     query = db.session.query(
         HistoricRetailInventorySnapshotFact.date_key,
-        HistoricRetailInventorySnapshotFact.quantity_on_hand
-    ).filter(
+        HistoricRetailInventorySnapshotFact.quantity_on_hand,
+        DateDimension.date
+    ).join(DateDimension, HistoricRetailInventorySnapshotFact.date_key == DateDimension.date_key).filter(
         HistoricRetailInventorySnapshotFact.product_key == product_key,
-        HistoricRetailInventorySnapshotFact.date_key >= start_date,
-        HistoricRetailInventorySnapshotFact.date_key <= end_date,
+        DateDimension.date >= start_date,
+        DateDimension.date <= end_date,
         HistoricRetailInventorySnapshotFact.store_key == store_key
     )
 
     results = query.all()
-    date_keys = [(result[0]) for result in results]
+    date_keys = [result[0] for result in results]
     quantity_on_hand = [result[1] for result in results]
-    # print('Gross Profit', gross_profit_values)
+    dates = [result[2].strftime('%Y-%m-%d') for result in results]  # Mengambil tanggal dan memformatnya
 
     data = {
         "date_keys": date_keys,
-        "quantity_on_hand": quantity_on_hand
+        "quantity_on_hand": quantity_on_hand,
+        "dates": dates  # Menambahkan data tanggal ke dalam respons
     }
     # print(data)
     return jsonify(data)

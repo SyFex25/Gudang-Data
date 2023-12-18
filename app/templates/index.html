@@ -461,23 +461,27 @@
             }
         }
     });
+    
     function updateInventoryStockChart() {
         const startDate = document.getElementById("startDateI").value;
         const endDate = document.getElementById("endDateI").value;
+        
         if (selectedProductKeyInv && startDate && endDate && storeKey) {
             fetch(`/get_inventory_data?product_key=${selectedProductKeyInv}&start_date=${startDate}&end_date=${endDate}&store_key=${storeKey}`)
                 .then(response => response.json())
                 .then(data => {
-                    const dateKeys = data.date_keys;
+                    const dates = data.dates; // Mengambil data tanggal dari respons
                     const quantity_on_hand = data.quantity_on_hand;
-                    inventoryStockChart.data.labels = dateKeys;
+                    
+                    inventoryStockChart.data.labels = dates; // Menggunakan tanggal sebagai label
                     inventoryStockChart.data.datasets[0].data = quantity_on_hand;
                     inventoryStockChart.update();
                 });
         } else {
-            alert("Please select a product, start date, end date and store.");
+            alert("Please select a product, start date, end date, and store.");
         }
     }
+
 
     const totalSalesChart = new Chart(document.getElementById('totalSalesChart'), {
         type: 'bar',
